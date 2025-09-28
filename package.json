@@ -9,7 +9,13 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"supabase:start": "npx supabase@latest start",
+		"supabase:stop": "npx supabase@latest stop",
+		"supabase:status": "npx supabase@latest status",
+		"supabase:reset": "npx supabase@latest db reset",
+		"supabase:studio": "npx supabase@latest studio",
+		"supabase:gen-types": "npx supabase@latest gen types typescript --local > src/lib/database.types.ts"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
@@ -21,6 +27,7 @@
 		"flowbite": "^3.1.2",
 		"flowbite-svelte": "^1.15.0",
 		"flowbite-svelte-icons": "^3.0.0",
+		"supabase": "^2.45.5",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"tailwindcss": "^4.0.0",
@@ -30,10 +37,12 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@tailwindcss/oxide",
-			"esbuild"
+			"esbuild",
+			"supabase"
 		]
 	},
 	"dependencies": {
 		"@supabase/supabase-js": "^2.58.0"
-	}
+	},
+	"packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a"
 }
