@@ -1,17 +1,38 @@
 <script lang="ts">
-	import { Button, Card, Label, Input } from 'flowbite-svelte';
+	import { Button, Card, Label, Input, Alert } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
 	
 	let email = '';
 	let isLoading = false;
 	let emailSent = false;
+	let errorMessage = '';
 	
 	async function handleForgotPassword() {
+		if (!email) {
+			errorMessage = 'Please enter your email address';
+			return;
+		}
+		
 		isLoading = true;
-		// Simulate API call
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		isLoading = false;
-		emailSent = true;
+		errorMessage = '';
+		
+		try {
+			const { error } = await supabase.auth.resetPasswordForEmail(email, {
+				redirectTo: `${window.location.origin}/reset-password`
+			});
+			
+			if (error) {
+				errorMessage = error.message;
+			} else {
+				emailSent = true;
+			}
+		} catch (err) {
+			errorMessage = 'An unexpected error occurred. Please try again.';
+			console.error('Password reset error:', err);
+		} finally {
+			isLoading = false;
+		}
 	}
 	
 	function goToLogin() {
@@ -35,6 +56,12 @@
 		</div>
 		
 		<Card class="p-6">
+			{#if errorMessage}
+				<Alert color="red" class="mb-4">
+					{errorMessage}
+				</Alert>
+			{/if}
+			
 			{#if emailSent}
 				<div class="text-center space-y-4">
 					<div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">

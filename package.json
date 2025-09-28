@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "pnpm install &&vite dev",
+		"dev": "pnpm install && vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -32,5 +32,8 @@
 			"@tailwindcss/oxide",
 			"esbuild"
 		]
+	},
+	"dependencies": {
+		"@supabase/supabase-js": "^2.58.0"
 	}
 }

@@ -1,19 +1,64 @@
 <script lang="ts">
-	import { Button, Card, Label, Input, Checkbox } from 'flowbite-svelte';
+	import { Button, Card, Label, Input, Checkbox, Alert } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
 	
 	let email = '';
 	let password = '';
 	let rememberMe = false;
 	let isLoading = false;
+	let errorMessage = '';
 	
 	async function handleLogin() {
+		if (!email || !password) {
+			errorMessage = 'Please fill in all fields';
+			return;
+		}
+		
 		isLoading = true;
-		// Simulate API call
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		isLoading = false;
-		// Redirect to dashboard or home page
-		goto('/');
+		errorMessage = '';
+		
+		try {
+			const { data, error } = await supabase.auth.signInWithPassword({
+				email,
+				password
+			});
+			
+			if (error) {
+				errorMessage = error.message;
+			} else if (data.user) {
+				// Redirect to dashboard or home page
+				goto('/');
+			}
+		} catch (err) {
+			errorMessage = 'An unexpected error occurred. Please try again.';
+			console.error('Login error:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
+	
+	async function handleGoogleLogin() {
+		isLoading = true;
+		errorMessage = '';
+		
+		try {
+			const { error } = await supabase.auth.signInWithOAuth({
+				provider: 'google',
+				options: {
+					redirectTo: `${window.location.origin}/`
+				}
+			});
+			
+			if (error) {
+				errorMessage = error.message;
+			}
+		} catch (err) {
+			errorMessage = 'An unexpected error occurred. Please try again.';
+			console.error('Google login error:', err);
+		} finally {
+			isLoading = false;
+		}
 	}
 </script>
 
@@ -32,6 +77,12 @@
 		</div>
 		
 		<Card class="p-6">
+			{#if errorMessage}
+				<Alert color="red" class="mb-4">
+					{errorMessage}
+				</Alert>
+			{/if}
+			
 			<form on:submit|preventDefault={handleLogin} class="space-y-6">
 				<div>
 					<Label for="email" class="block text-sm font-medium text-gray-700">
@@ -92,7 +143,7 @@
 				</div>
 				
 				<div class="mt-6 grid grid-cols-2 gap-3">
-					<Button color="light" class="w-full">
+					<Button color="light" class="w-full" onclick={handleGoogleLogin} disabled={isLoading}>
 						<svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
 							<path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
 							<path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>

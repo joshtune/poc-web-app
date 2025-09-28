@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Button, Card, Label, Input, Checkbox } from 'flowbite-svelte';
+	import { Button, Card, Label, Input, Checkbox, Alert } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
 	
 	let firstName = '';
 	let lastName = '';
@@ -9,24 +10,84 @@
 	let confirmPassword = '';
 	let agreeToTerms = false;
 	let isLoading = false;
+	let errorMessage = '';
+	let successMessage = '';
 	
 	async function handleRegister() {
 		if (password !== confirmPassword) {
-			alert('Passwords do not match');
+			errorMessage = 'Passwords do not match';
 			return;
 		}
 		
 		if (!agreeToTerms) {
-			alert('Please agree to the terms and conditions');
+			errorMessage = 'Please agree to the terms and conditions';
+			return;
+		}
+		
+		if (password.length < 8) {
+			errorMessage = 'Password must be at least 8 characters long';
 			return;
 		}
 		
 		isLoading = true;
-		// Simulate API call
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		isLoading = false;
-		// Redirect to login page or dashboard
-		goto('/login');
+		errorMessage = '';
+		successMessage = '';
+		
+		try {
+			const { data, error } = await supabase.auth.signUp({
+				email,
+				password,
+				options: {
+					data: {
+						first_name: firstName,
+						last_name: lastName,
+						full_name: `${firstName} ${lastName}`
+					}
+				}
+			});
+			
+			if (error) {
+				errorMessage = error.message;
+			} else if (data.user) {
+				successMessage = 'Account created successfully! Please check your email to verify your account.';
+				// Clear form
+				firstName = '';
+				lastName = '';
+				email = '';
+				password = '';
+				confirmPassword = '';
+				agreeToTerms = false;
+			}
+		} catch (err) {
+			errorMessage = 'An unexpected error occurred. Please try again.';
+			console.error('Registration error:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
+	
+	async function handleGoogleRegister() {
+		isLoading = true;
+		errorMessage = '';
+		successMessage = '';
+		
+		try {
+			const { error } = await supabase.auth.signInWithOAuth({
+				provider: 'google',
+				options: {
+					redirectTo: `${window.location.origin}/`
+				}
+			});
+			
+			if (error) {
+				errorMessage = error.message;
+			}
+		} catch (err) {
+			errorMessage = 'An unexpected error occurred. Please try again.';
+			console.error('Google registration error:', err);
+		} finally {
+			isLoading = false;
+		}
 	}
 </script>
 
@@ -45,6 +106,18 @@
 		</div>
 		
 		<Card class="p-6">
+			{#if errorMessage}
+				<Alert color="red" class="mb-4">
+					{errorMessage}
+				</Alert>
+			{/if}
+			
+			{#if successMessage}
+				<Alert color="green" class="mb-4">
+					{successMessage}
+				</Alert>
+			{/if}
+			
 			<form on:submit|preventDefault={handleRegister} class="space-y-6">
 				<div class="grid grid-cols-2 gap-4">
 					<div>
@@ -148,7 +221,7 @@
 				</div>
 				
 				<div class="mt-6 grid grid-cols-2 gap-3">
-					<Button color="light" class="w-full">
+					<Button color="light" class="w-full" onclick={handleGoogleRegister} disabled={isLoading}>
 						<svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
 							<path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
 							<path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
