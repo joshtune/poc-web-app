@@ -10,7 +10,8 @@ function applySvelteSettings(configs) {
 			return config;
 		}
 
-		const existingExtraExtensions = config.languageOptions?.parserOptions?.extraFileExtensions ?? [];
+		const existingExtraExtensions =
+			config.languageOptions?.parserOptions?.extraFileExtensions ?? [];
 		const extraFileExtensions = Array.from(new Set([...existingExtraExtensions, '.svelte']));
 
 		return {
