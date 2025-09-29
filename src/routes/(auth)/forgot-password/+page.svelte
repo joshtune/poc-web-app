@@ -2,6 +2,7 @@
 	import { Button, Card, Label, Input, Alert } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { resolve } from '$app/paths';
 
 	let email = '';
 	let isLoading = false;
@@ -18,8 +19,14 @@
 		errorMessage = '';
 
 		try {
+			const redirectPath = resolve('/reset-password');
+			const origin = globalThis.location?.origin ?? '';
+			const redirectTo = origin
+				? new URL(redirectPath, origin).toString()
+				: redirectPath;
+
 			const { error } = await supabase.auth.resetPasswordForEmail(email, {
-				redirectTo: `${window.location.origin}/reset-password`
+				redirectTo
 			});
 
 			if (error) {
@@ -36,7 +43,7 @@
 	}
 
 	function goToLogin() {
-		goto('/login');
+		goto(resolve('/login'));
 	}
 </script>
 
@@ -123,7 +130,7 @@
 						<p class="text-sm text-gray-600 dark:text-gray-300">
 							Remember your password?
 							<a
-								href="/login"
+								href={resolve('/login')}
 								class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 							>
 								Sign in here
@@ -139,7 +146,7 @@
 				<p class="text-xs text-gray-500 dark:text-gray-400">
 					If you don't receive an email within a few minutes, check your spam folder or
 					<a
-						href="/contact"
+						href={resolve('/contact')}
 						class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 					>
 						contact support

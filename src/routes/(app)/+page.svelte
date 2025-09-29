@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Card } from 'flowbite-svelte';
+	import { Button } from 'flowbite-svelte';
 </script>
 
 <div class="space-y-10 px-4 py-10 sm:px-8 xl:px-12">

@@ -4,6 +4,7 @@
 	import { supabase } from '$lib/supabase';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
+	import { resolve } from '$app/paths';
 
 	let email = '';
 	let password = '';
@@ -30,8 +31,9 @@
 				errorMessage = error.message;
 			} else if (data.user) {
 				const redirectParam = get(page).url.searchParams.get('redirectTo');
-				const destination = redirectParam ? decodeURIComponent(redirectParam) : '/';
-				await goto(destination);
+				const decodedDestination = redirectParam ? decodeURIComponent(redirectParam) : '/';
+				const destination = decodedDestination.startsWith('/') ? decodedDestination : '/';
+				await goto(resolve(destination));
 			}
 		} catch (err) {
 			errorMessage = 'An unexpected error occurred. Please try again.';
@@ -46,10 +48,14 @@
 		errorMessage = '';
 
 		try {
+			const redirectPath = resolve('/');
+			const origin = globalThis.location?.origin ?? '';
+			const redirectTo = origin ? new URL(redirectPath, origin).toString() : redirectPath;
+
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
-					redirectTo: `${window.location.origin}/`
+					redirectTo
 				}
 			});
 
@@ -74,7 +80,7 @@
 			<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
 				Or
 				<a
-					href="/register"
+					href={resolve('/register')}
 					class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 				>
 					create a new account
@@ -122,7 +128,7 @@
 					<div class="flex items-center justify-between">
 						<Checkbox bind:checked={rememberMe}>Remember me</Checkbox>
 						<a
-							href="/forgot-password"
+							href={resolve('/forgot-password')}
 							class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 						>
 							Forgot your password?

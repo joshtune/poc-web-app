@@ -1,21 +1,20 @@
 <script lang="ts">
-	import { Navbar, NavBrand, NavLi, NavUl } from 'flowbite-svelte';
+	import { Navbar, NavBrand } from 'flowbite-svelte';
 	import {
 		ArrowLeftToBracketOutline,
 		ArrowRightToBracketOutline,
 		UserCircleOutline
 	} from 'flowbite-svelte-icons';
 	import favicon from '$lib/assets/favicon.svg';
-	import { page } from '$app/stores';
 	import { ThemeToggle } from '$lib';
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import type { User } from '@supabase/supabase-js';
 
 	let { children, data } = $props();
 
-	let currentPath = $derived($page.url.pathname);
 	let user = $state<User | null>(data?.session?.user ?? null);
 	let isLoggingOut = $state(false);
 	let authSubscription: { unsubscribe: () => void } | null = null;
@@ -57,11 +56,11 @@
 	});
 
 	function handleProfileClick() {
-		goto(user ? '/profile' : '/login');
+		goto(resolve(user ? '/profile' : '/login'));
 	}
 
 	function handleLoginClick() {
-		goto('/login');
+		goto(resolve('/login'));
 	}
 
 	async function handleLogoutClick() {
@@ -76,7 +75,7 @@
 				return;
 			}
 			updateUserState(null);
-			await goto('/login');
+			await goto(resolve('/login'));
 		} finally {
 			isLoggingOut = false;
 		}
@@ -85,7 +84,7 @@
 
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
 	<Navbar class="bg-white shadow-sm dark:bg-gray-800 dark:border-b dark:border-gray-700" fluid>
-		<NavBrand href="/" class="flex items-center space-x-3">
+	<NavBrand href={resolve('/')} class="flex items-center space-x-3">
 			<img src={favicon} class="h-8 w-8" alt="Logo" />
 			<span
 				class="self-center whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white"

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, Card, Label, Input, Checkbox, Alert } from 'flowbite-svelte';
-	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { resolve } from '$app/paths';
 
 	let firstName = '';
 	let lastName = '';
@@ -73,10 +73,14 @@
 		successMessage = '';
 
 		try {
+			const redirectPath = resolve('/');
+			const origin = globalThis.location?.origin ?? '';
+			const redirectTo = origin ? new URL(redirectPath, origin).toString() : redirectPath;
+
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
-					redirectTo: `${window.location.origin}/`
+					redirectTo
 				}
 			});
 
@@ -101,7 +105,7 @@
 			<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
 				Or
 				<a
-					href="/login"
+					href={resolve('/login')}
 					class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 				>
 					sign in to your existing account
@@ -203,17 +207,17 @@
 					</div>
 
 					<div>
-						<Checkbox bind:checked={agreeToTerms} required>
+					<Checkbox bind:checked={agreeToTerms} required>
 							I agree to the
-							<a
-								href="/terms"
+						<a
+							href={resolve('/terms')}
 								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 							>
 								Terms and Conditions</a
 							>
 							and
 							<a
-								href="/privacy"
+								href={resolve('/privacy')}
 								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 							>
 								Privacy Policy

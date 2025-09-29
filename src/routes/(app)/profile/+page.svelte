@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Avatar, Button, Card, Tabs, TabItem } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import type { User } from '@supabase/supabase-js';
 	import { supabase } from '$lib/supabase';
@@ -24,7 +25,7 @@
 		isLoading = false;
 
 		if (!user && !error) {
-			goto('/login');
+			await goto(resolve('/login'));
 		}
 	});
 
@@ -99,7 +100,9 @@
 		<Card class="border border-rose-200 bg-rose-50 p-6 text-rose-600">
 			<p class="font-semibold">Unable to load profile</p>
 			<p class="mt-1 text-sm">{errorMessage}</p>
-			<Button class="mt-4" color="primary" onclick={() => goto('/login')}>Return to login</Button>
+			<Button class="mt-4" color="primary" onclick={() => goto(resolve('/login'))}>
+				Return to login
+			</Button>
 		</Card>
 	{:else if user}
 		<div class="grid gap-6 lg:grid-cols-[320px,1fr]">
@@ -126,7 +129,7 @@
 					<Button
 						color="primary"
 						class="w-full"
-						onclick={() => supabase.auth.signOut().then(() => goto('/login'))}
+						onclick={() => supabase.auth.signOut().then(() => goto(resolve('/login')))}
 					>
 						Sign out
 					</Button>
@@ -138,7 +141,7 @@
 					<TabItem>
 						<div class="space-y-6 px-1 pb-6 pt-4">
 							<div class="grid gap-5 sm:grid-cols-2">
-								{#each profileFields as field}
+								{#each profileFields as field (field.label)}
 									<div>
 										<p class="text-xs font-medium uppercase tracking-wide text-gray-500">
 											{field.label}
@@ -160,7 +163,7 @@
 					<TabItem>
 						<div class="space-y-6 px-1 pb-6 pt-4">
 							<div class="grid gap-5 sm:grid-cols-2">
-								{#each accountFields as field}
+								{#each accountFields as field (field.label)}
 									<div>
 										<p class="text-xs font-medium uppercase tracking-wide text-gray-500">
 											{field.label}

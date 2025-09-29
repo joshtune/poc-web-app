@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Button, Card, Label, Input, Alert } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
+	import { resolve } from '$app/paths';
 
 	let password = '';
 	let confirmPassword = '';
@@ -17,19 +17,19 @@
 	let refreshToken = '';
 
 	onMount(() => {
-		// Check if we have the tokens in the URL hash
-		const hashParams = new URLSearchParams(window.location.hash.substring(1));
+		const hash = globalThis.location?.hash ?? '';
+		const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
 		accessToken = hashParams.get('access_token') || '';
 		refreshToken = hashParams.get('refresh_token') || '';
 
 		if (accessToken && refreshToken) {
 			// Set the session
-			supabase.auth
-				.setSession({
-					access_token: accessToken,
-					refresh_token: refreshToken
-				})
-				.then(({ data, error }) => {
+		supabase.auth
+			.setSession({
+				access_token: accessToken,
+				refresh_token: refreshToken
+			})
+			.then(({ error }) => {
 					if (error) {
 						errorMessage = 'Invalid or expired reset link. Please request a new password reset.';
 					} else {
@@ -79,7 +79,7 @@
 	}
 
 	function goToLogin() {
-		goto('/login');
+		goto(resolve('/login'));
 	}
 </script>
 
@@ -182,7 +182,7 @@
 						<p class="text-sm text-gray-600 dark:text-gray-300">
 							Remember your password?
 							<a
-								href="/login"
+								href={resolve('/login')}
 								class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 							>
 								Sign in here
@@ -216,7 +216,11 @@
 							</p>
 						</div>
 						<div class="space-y-3">
-							<Button color="primary" class="w-full" onclick={() => goto('/forgot-password')}>
+						<Button
+							color="primary"
+							class="w-full"
+							onclick={() => goto(resolve('/forgot-password'))}
+						>
 								Request New Reset Link
 							</Button>
 							<Button color="light" class="w-full" onclick={goToLogin}>Back to Sign In</Button>
