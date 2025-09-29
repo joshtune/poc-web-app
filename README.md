@@ -29,12 +29,15 @@ pnpm install
 #### Option A: Local Supabase (Recommended for Development)
 
 1. **Start Supabase locally**:
+
    ```sh
    pnpm supabase:start
    ```
+
    This will start all Supabase services locally using Docker.
 
 2. **Copy the local credentials** from the terminal output and create a `.env` file:
+
    ```env
    VITE_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
    VITE_PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key_from_terminal

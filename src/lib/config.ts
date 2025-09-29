@@ -9,6 +9,10 @@ export const SUPABASE_CONFIG = {
 
 // Validate configuration
 if (!SUPABASE_CONFIG.anonKey) {
-	console.warn('Supabase anon key is missing. Please set VITE_PUBLIC_SUPABASE_ANON_KEY environment variable.');
-	console.log('For local development: Run `pnpm supabase:start` and copy the anon key from the output.');
+	console.warn(
+		'Supabase anon key is missing. Please set VITE_PUBLIC_SUPABASE_ANON_KEY environment variable.'
+	);
+	console.log(
+		'For local development: Run `pnpm supabase:start` and copy the anon key from the output.'
+	);
 }

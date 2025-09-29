@@ -1,0 +1,8 @@
+node_modules
+.svelte-kit
+build
+coverage
+dist
+supabase/.temp
+supabase/.branches
+pnpm-lock.yaml

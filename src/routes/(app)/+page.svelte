@@ -9,16 +9,41 @@
 	];
 
 	const activity = [
-		{ team: 'Product', update: 'Refined onboarding milestones', status: 'In Review', time: '2h ago' },
-		{ team: 'Growth', update: 'Activated invite referral experiment', status: 'Live', time: '4h ago' },
-		{ team: 'Support', update: 'Resolved high-priority tickets', status: 'Completed', time: 'Today' },
-		{ team: 'Engineering', update: 'Deployed auth service patch', status: 'Completed', time: 'Yesterday' }
+		{
+			team: 'Product',
+			update: 'Refined onboarding milestones',
+			status: 'In Review',
+			time: '2h ago'
+		},
+		{
+			team: 'Growth',
+			update: 'Activated invite referral experiment',
+			status: 'Live',
+			time: '4h ago'
+		},
+		{
+			team: 'Support',
+			update: 'Resolved high-priority tickets',
+			status: 'Completed',
+			time: 'Today'
+		},
+		{
+			team: 'Engineering',
+			update: 'Deployed auth service patch',
+			status: 'Completed',
+			time: 'Yesterday'
+		}
 	];
 
 	const tasks = [
 		{ title: 'Finalize Q2 roadmap', owner: 'Product', due: 'Tomorrow', completed: false },
 		{ title: 'Schedule customer advisory board', owner: 'Success', due: 'Friday', completed: true },
-		{ title: 'Draft billing migration guide', owner: 'Engineering', due: 'Next week', completed: false },
+		{
+			title: 'Draft billing migration guide',
+			owner: 'Engineering',
+			due: 'Next week',
+			completed: false
+		},
 		{ title: 'Plan growth retrospective', owner: 'Growth', due: 'April 12', completed: false }
 	];
 
@@ -65,18 +90,37 @@
 						<p class="text-sm font-medium text-gray-500">{metric.title}</p>
 						<p class="mt-2 text-3xl font-semibold text-gray-900">{metric.value}</p>
 					</div>
-					<span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+					<span
+						class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600"
+					>
 						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12l6-6m-6 6l6 6" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.5"
+								d="M5 12h14M5 12l6-6m-6 6l6 6"
+							/>
 						</svg>
 					</span>
 				</div>
-				<p class={`mt-4 flex items-center text-sm font-medium ${metric.positive ? 'text-emerald-600' : 'text-rose-600'}`}>
+				<p
+					class={`mt-4 flex items-center text-sm font-medium ${metric.positive ? 'text-emerald-600' : 'text-rose-600'}`}
+				>
 					<svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						{#if metric.positive}
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7 7 7" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.5"
+								d="M5 10l7-7 7 7"
+							/>
 						{:else}
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7-7-7" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.5"
+								d="M19 14l-7 7-7-7"
+							/>
 						{/if}
 					</svg>
 					{metric.change} vs last period
@@ -90,7 +134,9 @@
 			<div class="flex items-center justify-between gap-4 border-b border-gray-100 px-6 py-5">
 				<div>
 					<h2 class="text-lg font-semibold text-gray-900">Team activity</h2>
-					<p class="mt-1 text-sm text-gray-500">Keep track of the latest updates across product areas.</p>
+					<p class="mt-1 text-sm text-gray-500">
+						Keep track of the latest updates across product areas.
+					</p>
 				</div>
 				<Button color="light" size="sm">View all</Button>
 			</div>
@@ -110,7 +156,9 @@
 								<td class="px-6 py-4 font-medium text-gray-900">{item.team}</td>
 								<td class="px-6 py-4">{item.update}</td>
 								<td class="px-6 py-4">
-									<span class={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${item.status === 'Live' ? 'bg-emerald-50 text-emerald-600' : item.status === 'Completed' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>
+									<span
+										class={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${item.status === 'Live' ? 'bg-emerald-50 text-emerald-600' : item.status === 'Completed' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}
+									>
 										{item.status}
 									</span>
 								</td>
@@ -158,7 +206,9 @@
 			<div class="flex items-center justify-between gap-4">
 				<div>
 					<h2 class="text-lg font-semibold text-gray-900">Performance trends</h2>
-					<p class="mt-1 text-sm text-gray-500">Week-over-week movement across core product metrics.</p>
+					<p class="mt-1 text-sm text-gray-500">
+						Week-over-week movement across core product metrics.
+					</p>
 				</div>
 				<Button size="sm" color="light">Export data</Button>
 			</div>
@@ -170,7 +220,10 @@
 							<span class="text-gray-900">{item.value}</span>
 						</div>
 						<div class="mt-2 h-2 rounded-full bg-gray-200">
-							<div class={`h-2 rounded-full ${item.color}`} style={`width: ${item.progress}%`}></div>
+							<div
+								class={`h-2 rounded-full ${item.color}`}
+								style={`width: ${item.progress}%`}
+							></div>
 						</div>
 					</div>
 				{/each}
@@ -184,7 +237,9 @@
 					<li class="rounded-lg border border-gray-100 p-4">
 						<p class="text-sm font-semibold text-gray-900">{note.title}</p>
 						<p class="mt-2 text-sm text-gray-500">{note.body}</p>
-						<p class="mt-3 text-xs font-medium uppercase tracking-wide text-gray-400">{note.time}</p>
+						<p class="mt-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+							{note.time}
+						</p>
 					</li>
 				{/each}
 			</ul>

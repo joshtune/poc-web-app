@@ -4,65 +4,67 @@
 	import { page } from '$app/stores';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
-	
+
 	let password = '';
 	let confirmPassword = '';
 	let isLoading = false;
 	let passwordReset = false;
 	let errorMessage = '';
 	let isValidSession = false;
-	
+
 	// Get the access token and refresh token from URL hash
 	let accessToken = '';
 	let refreshToken = '';
-	
+
 	onMount(() => {
 		// Check if we have the tokens in the URL hash
 		const hashParams = new URLSearchParams(window.location.hash.substring(1));
 		accessToken = hashParams.get('access_token') || '';
 		refreshToken = hashParams.get('refresh_token') || '';
-		
+
 		if (accessToken && refreshToken) {
 			// Set the session
-			supabase.auth.setSession({
-				access_token: accessToken,
-				refresh_token: refreshToken
-			}).then(({ data, error }) => {
-				if (error) {
-					errorMessage = 'Invalid or expired reset link. Please request a new password reset.';
-				} else {
-					isValidSession = true;
-				}
-			});
+			supabase.auth
+				.setSession({
+					access_token: accessToken,
+					refresh_token: refreshToken
+				})
+				.then(({ data, error }) => {
+					if (error) {
+						errorMessage = 'Invalid or expired reset link. Please request a new password reset.';
+					} else {
+						isValidSession = true;
+					}
+				});
 		} else {
 			errorMessage = 'Invalid reset link. Please request a new password reset.';
 		}
 	});
-	
+
 	async function handleResetPassword() {
 		if (password !== confirmPassword) {
 			errorMessage = 'Passwords do not match';
 			return;
 		}
-		
+
 		if (password.length < 8) {
 			errorMessage = 'Password must be at least 8 characters long';
 			return;
 		}
-		
+
 		if (!isValidSession) {
 			errorMessage = 'Invalid session. Please request a new password reset.';
 			return;
 		}
-		
+
 		isLoading = true;
 		errorMessage = '';
-		
+
 		try {
 			const { error } = await supabase.auth.updateUser({
 				password: password
 			});
-			
+
 			if (error) {
 				errorMessage = error.message;
 			} else {
@@ -75,7 +77,7 @@
 			isLoading = false;
 		}
 	}
-	
+
 	function goToLogin() {
 		goto('/login');
 	}
@@ -95,30 +97,39 @@
 				{/if}
 			</p>
 		</div>
-		
+
 		<Card class="p-6">
 			{#if errorMessage}
 				<Alert color="red" class="mb-4">
 					{errorMessage}
 				</Alert>
 			{/if}
-			
+
 			{#if passwordReset}
 				<div class="text-center space-y-4">
 					<div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-						<svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+						<svg
+							class="h-6 w-6 text-green-600"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path>
 						</svg>
 					</div>
 					<div>
 						<h3 class="text-lg font-medium text-gray-900">Password updated!</h3>
 						<p class="text-sm text-gray-600 mt-2">
-							Your password has been successfully updated. You can now sign in with your new password.
+							Your password has been successfully updated. You can now sign in with your new
+							password.
 						</p>
 					</div>
-					<Button color="primary" class="w-full" onclick={goToLogin}>
-						Sign In
-					</Button>
+					<Button color="primary" class="w-full" onclick={goToLogin}>Sign In</Button>
 				</div>
 			{:else if isValidSession}
 				<form on:submit|preventDefault={handleResetPassword} class="space-y-6">
@@ -126,47 +137,39 @@
 						<Label for="password" class="block text-sm font-medium text-gray-700">
 							New password
 						</Label>
-				<Input
-					id="password"
-					type="password"
-					bind:value={password}
-					placeholder="Enter your new password"
-					required
-					class="mt-1"
-				/>
-						<p class="mt-1 text-xs text-gray-500">
-							Password must be at least 8 characters long
-						</p>
+						<Input
+							id="password"
+							type="password"
+							bind:value={password}
+							placeholder="Enter your new password"
+							required
+							class="mt-1"
+						/>
+						<p class="mt-1 text-xs text-gray-500">Password must be at least 8 characters long</p>
 					</div>
-					
+
 					<div>
 						<Label for="confirmPassword" class="block text-sm font-medium text-gray-700">
 							Confirm new password
 						</Label>
-				<Input
-					id="confirmPassword"
-					type="password"
-					bind:value={confirmPassword}
-					placeholder="Confirm your new password"
-					required
-					class="mt-1"
-				/>
+						<Input
+							id="confirmPassword"
+							type="password"
+							bind:value={confirmPassword}
+							placeholder="Confirm your new password"
+							required
+							class="mt-1"
+						/>
 					</div>
-					
-					<Button
-						type="submit"
-						color="primary"
-						size="lg"
-						class="w-full"
-						disabled={isLoading}
-					>
+
+					<Button type="submit" color="primary" size="lg" class="w-full" disabled={isLoading}>
 						{isLoading ? 'Updating password...' : 'Update password'}
 					</Button>
 				</form>
-				
+
 				<div class="mt-6 text-center">
 					<p class="text-sm text-gray-600">
-						Remember your password? 
+						Remember your password?
 						<a href="/login" class="font-medium text-primary-600 hover:text-primary-500">
 							Sign in here
 						</a>
@@ -176,22 +179,26 @@
 				<div class="text-center space-y-4">
 					<div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
 						<svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							></path>
 						</svg>
 					</div>
 					<div>
 						<h3 class="text-lg font-medium text-gray-900">Invalid Reset Link</h3>
 						<p class="text-sm text-gray-600 mt-2">
-							This password reset link is invalid or has expired. Please request a new password reset.
+							This password reset link is invalid or has expired. Please request a new password
+							reset.
 						</p>
 					</div>
 					<div class="space-y-3">
 						<Button color="primary" class="w-full" onclick={() => goto('/forgot-password')}>
 							Request New Reset Link
 						</Button>
-						<Button color="light" class="w-full" onclick={goToLogin}>
-							Back to Sign In
-						</Button>
+						<Button color="light" class="w-full" onclick={goToLogin}>Back to Sign In</Button>
 					</div>
 				</div>
 			{/if}
