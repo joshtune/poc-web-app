@@ -132,8 +132,8 @@
 			</Card>
 
 			<Card class="p-0">
-				<Tabs class="px-6 pt-6" activeClass="border-b-2 border-primary-500 text-primary-600">
-					<TabItem label="Profile">
+				<Tabs class="px-6 pt-6">
+					<TabItem>
 						<div class="space-y-6 px-1 pb-6 pt-4">
 							<div class="grid gap-5 sm:grid-cols-2">
 								{#each profileFields as field}
@@ -153,7 +153,7 @@
 							</div>
 						</div>
 					</TabItem>
-					<TabItem label="Account">
+					<TabItem>
 						<div class="space-y-6 px-1 pb-6 pt-4">
 							<div class="grid gap-5 sm:grid-cols-2">
 								{#each accountFields as field}
@@ -176,7 +176,7 @@
 							</div>
 						</div>
 					</TabItem>
-					<TabItem label="Sessions">
+					<TabItem>
 						<div class="space-y-5 px-1 pb-6 pt-4 text-sm text-gray-600">
 							<p>
 								Session management tools will appear here. You can list active devices, revoke
