@@ -9,7 +9,7 @@
 </script>
 
 <div class="min-h-screen bg-gray-50 flex flex-col">
-	<Navbar class="bg-white shadow-sm">
+	<Navbar class="bg-white shadow-sm" fluid>
 		<NavBrand href="/" class="flex items-center space-x-3">
 			<img src={favicon} class="h-8 w-8" alt="Logo" />
 			<span class="self-center whitespace-nowrap text-xl font-semibold">Auth App</span>
