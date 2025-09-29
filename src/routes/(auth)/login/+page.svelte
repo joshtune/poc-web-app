@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { resolve } from '$app/paths';
+	type RouteTarget = Parameters<typeof resolve>[0];
 
 	let email = '';
 	let password = '';
@@ -33,7 +34,7 @@
 				const redirectParam = get(page).url.searchParams.get('redirectTo');
 				const decodedDestination = redirectParam ? decodeURIComponent(redirectParam) : '/';
 				const destination = decodedDestination.startsWith('/') ? decodedDestination : '/';
-				await goto(resolve(destination));
+				await goto(resolve(destination as RouteTarget));
 			}
 		} catch (err) {
 			errorMessage = 'An unexpected error occurred. Please try again.';

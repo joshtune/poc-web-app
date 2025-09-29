@@ -21,9 +21,7 @@
 		try {
 			const redirectPath = resolve('/reset-password');
 			const origin = globalThis.location?.origin ?? '';
-			const redirectTo = origin
-				? new URL(redirectPath, origin).toString()
-				: redirectPath;
+			const redirectTo = origin ? new URL(redirectPath, origin).toString() : redirectPath;
 
 			const { error } = await supabase.auth.resetPasswordForEmail(email, {
 				redirectTo

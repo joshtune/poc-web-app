@@ -24,12 +24,12 @@
 
 		if (accessToken && refreshToken) {
 			// Set the session
-		supabase.auth
-			.setSession({
-				access_token: accessToken,
-				refresh_token: refreshToken
-			})
-			.then(({ error }) => {
+			supabase.auth
+				.setSession({
+					access_token: accessToken,
+					refresh_token: refreshToken
+				})
+				.then(({ error }) => {
 					if (error) {
 						errorMessage = 'Invalid or expired reset link. Please request a new password reset.';
 					} else {
@@ -216,11 +216,11 @@
 							</p>
 						</div>
 						<div class="space-y-3">
-						<Button
-							color="primary"
-							class="w-full"
-							onclick={() => goto(resolve('/forgot-password'))}
-						>
+							<Button
+								color="primary"
+								class="w-full"
+								onclick={() => goto(resolve('/forgot-password'))}
+							>
 								Request New Reset Link
 							</Button>
 							<Button color="light" class="w-full" onclick={goToLogin}>Back to Sign In</Button>

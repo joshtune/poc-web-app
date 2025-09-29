@@ -207,10 +207,10 @@
 					</div>
 
 					<div>
-					<Checkbox bind:checked={agreeToTerms} required>
+						<Checkbox bind:checked={agreeToTerms} required>
 							I agree to the
-						<a
-							href={resolve('/terms')}
+							<a
+								href={resolve('/terms')}
 								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
 							>
 								Terms and Conditions</a
