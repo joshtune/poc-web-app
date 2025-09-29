@@ -6,7 +6,7 @@
 	<section class="flex flex-wrap items-center justify-between gap-4">
 		<div>
 			<p class="text-sm font-medium text-primary-600">Welcome back</p>
-			<h1 class="mt-1 text-3xl font-semibold text-gray-900">Dashboard overview</h1>
+			<h1 class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">Dashboard overview</h1>
 			<p class="mt-2 max-w-2xl text-sm text-gray-500">
 				Monitor key product and growth signals across teams in real time.
 			</p>

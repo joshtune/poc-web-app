@@ -80,7 +80,7 @@
 	<section class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
 		<div>
 			<p class="text-sm font-medium text-primary-600">Profile</p>
-			<h1 class="mt-1 text-3xl font-semibold text-gray-900">Account overview</h1>
+			<h1 class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">Account overview</h1>
 			<p class="mt-2 max-w-xl text-sm text-gray-500">
 				Manage how your information appears across the application and keep your account up to date.
 			</p>
@@ -116,7 +116,9 @@
 					{/if}
 				</Avatar>
 				<div class="text-center">
-					<p class="text-lg font-semibold text-gray-900">{displayName || user.email}</p>
+					<p class="text-lg font-semibold text-gray-900 dark:text-white">
+						{displayName || user.email}
+					</p>
 					<p class="mt-1 text-sm text-gray-500">{user.email}</p>
 				</div>
 				<div class="w-full space-y-3">
@@ -141,7 +143,9 @@
 										<p class="text-xs font-medium uppercase tracking-wide text-gray-500">
 											{field.label}
 										</p>
-										<p class="mt-1 text-sm font-semibold text-gray-900">{field.value()}</p>
+										<p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+											{field.value()}
+										</p>
 									</div>
 								{/each}
 							</div>
@@ -161,7 +165,9 @@
 										<p class="text-xs font-medium uppercase tracking-wide text-gray-500">
 											{field.label}
 										</p>
-										<p class="mt-1 text-sm font-semibold text-gray-900">{field.value()}</p>
+										<p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+											{field.value()}
+										</p>
 									</div>
 								{/each}
 							</div>

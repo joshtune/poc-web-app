@@ -1,1 +1,2 @@
-// place files you want to import through the `$lib` alias in this folder.
+export { theme, toggleTheme } from './stores/theme';
+export { default as ThemeToggle } from './components/ThemeToggle.svelte';

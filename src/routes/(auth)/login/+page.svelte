@@ -65,22 +65,25 @@
 	}
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 	<div class="max-w-md w-full space-y-8">
 		<div>
-			<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+			<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
 				Sign in to your account
 			</h2>
-			<p class="mt-2 text-center text-sm text-gray-600">
+			<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
 				Or
-				<a href="/register" class="font-medium text-primary-600 hover:text-primary-500">
+				<a
+					href="/register"
+					class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+				>
 					create a new account
 				</a>
 			</p>
 		</div>
 
 		<div class="flex justify-center">
-			<Card class="p-6 w-full max-w-md">
+			<Card class="p-6 w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
 				{#if errorMessage}
 					<Alert color="red" class="mb-4">
 						{errorMessage}
@@ -89,7 +92,9 @@
 
 				<form on:submit|preventDefault={handleLogin} class="space-y-6">
 					<div>
-						<Label for="email" class="block text-sm font-medium text-gray-700">Email address</Label>
+						<Label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Email address</Label
+						>
 						<Input
 							id="email"
 							type="email"
@@ -101,7 +106,9 @@
 					</div>
 
 					<div>
-						<Label for="password" class="block text-sm font-medium text-gray-700">Password</Label>
+						<Label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Password</Label
+						>
 						<Input
 							id="password"
 							type="password"
@@ -114,7 +121,10 @@
 
 					<div class="flex items-center justify-between">
 						<Checkbox bind:checked={rememberMe}>Remember me</Checkbox>
-						<a href="/forgot-password" class="text-sm text-primary-600 hover:text-primary-500">
+						<a
+							href="/forgot-password"
+							class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+						>
 							Forgot your password?
 						</a>
 					</div>
@@ -130,7 +140,9 @@
 							<div class="w-full border-t border-gray-300"></div>
 						</div>
 						<div class="relative flex justify-center text-sm">
-							<span class="px-2 bg-white text-gray-500">Or continue with</span>
+							<span class="px-2 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-300"
+								>Or continue with</span
+							>
 						</div>
 					</div>
 

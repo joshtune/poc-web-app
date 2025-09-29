@@ -92,20 +92,25 @@
 	}
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 	<div class="max-w-md w-full space-y-8">
 		<div>
-			<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
-			<p class="mt-2 text-center text-sm text-gray-600">
+			<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+				Create your account
+			</h2>
+			<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
 				Or
-				<a href="/login" class="font-medium text-primary-600 hover:text-primary-500">
+				<a
+					href="/login"
+					class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+				>
 					sign in to your existing account
 				</a>
 			</p>
 		</div>
 
 		<div class="flex justify-center">
-			<Card class="p-6 w-full max-w-md">
+			<Card class="p-6 w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
 				{#if errorMessage}
 					<Alert color="red" class="mb-4">
 						{errorMessage}
@@ -121,7 +126,10 @@
 				<form on:submit|preventDefault={handleRegister} class="space-y-6">
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<Label for="firstName" class="block text-sm font-medium text-gray-700">
+							<Label
+								for="firstName"
+								class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>
 								First name
 							</Label>
 							<Input
@@ -134,7 +142,9 @@
 							/>
 						</div>
 						<div>
-							<Label for="lastName" class="block text-sm font-medium text-gray-700">Last name</Label
+							<Label
+								for="lastName"
+								class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last name</Label
 							>
 							<Input
 								id="lastName"
@@ -148,7 +158,9 @@
 					</div>
 
 					<div>
-						<Label for="email" class="block text-sm font-medium text-gray-700">Email address</Label>
+						<Label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Email address</Label
+						>
 						<Input
 							id="email"
 							type="email"
@@ -160,7 +172,9 @@
 					</div>
 
 					<div>
-						<Label for="password" class="block text-sm font-medium text-gray-700">Password</Label>
+						<Label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+							>Password</Label
+						>
 						<Input
 							id="password"
 							type="password"
@@ -172,7 +186,10 @@
 					</div>
 
 					<div>
-						<Label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+						<Label
+							for="confirmPassword"
+							class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+						>
 							Confirm password
 						</Label>
 						<Input
@@ -188,11 +205,19 @@
 					<div>
 						<Checkbox bind:checked={agreeToTerms} required>
 							I agree to the
-							<a href="/terms" class="text-primary-600 hover:text-primary-500"
-								>Terms and Conditions</a
+							<a
+								href="/terms"
+								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+							>
+								Terms and Conditions</a
 							>
 							and
-							<a href="/privacy" class="text-primary-600 hover:text-primary-500">Privacy Policy</a>
+							<a
+								href="/privacy"
+								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+							>
+								Privacy Policy
+							</a>
 						</Checkbox>
 					</div>
 
@@ -204,10 +229,12 @@
 				<div class="mt-6">
 					<div class="relative">
 						<div class="absolute inset-0 flex items-center">
-							<div class="w-full border-t border-gray-300"></div>
+							<div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
 						</div>
 						<div class="relative flex justify-center text-sm">
-							<span class="px-2 bg-white text-gray-500">Or continue with</span>
+							<span class="px-2 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-300"
+								>Or continue with</span
+							>
 						</div>
 					</div>
 

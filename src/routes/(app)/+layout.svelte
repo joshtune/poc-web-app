@@ -7,6 +7,7 @@
 	} from 'flowbite-svelte-icons';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/stores';
+	import { ThemeToggle } from '$lib';
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -82,17 +83,22 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gray-50 flex flex-col">
-	<Navbar class="bg-white shadow-sm" fluid>
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+	<Navbar class="bg-white shadow-sm dark:bg-gray-800 dark:border-b dark:border-gray-700" fluid>
 		<NavBrand href="/" class="flex items-center space-x-3">
 			<img src={favicon} class="h-8 w-8" alt="Logo" />
-			<span class="self-center whitespace-nowrap text-xl font-semibold">Auth App</span>
+			<span
+				class="self-center whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white"
+			>
+				Auth App
+			</span>
 		</NavBrand>
 
 		<div class="flex items-center gap-2">
+			<ThemeToggle />
 			<button
 				type="button"
-				class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+				class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400"
 				aria-label={user ? 'Go to profile' : 'Sign in'}
 				onclick={handleProfileClick}
 			>
@@ -101,7 +107,7 @@
 			{#if !isLoggedIn}
 				<button
 					type="button"
-					class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+					class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400"
 					aria-label="Go to login"
 					onclick={handleLoginClick}
 				>
@@ -113,8 +119,8 @@
 					type="button"
 					class={`rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
 						isLoggingOut
-							? 'cursor-not-allowed text-gray-400'
-							: 'text-gray-600 hover:bg-gray-100 hover:text-primary-600'
+							? 'cursor-not-allowed text-gray-400 dark:text-gray-500'
+							: 'text-gray-600 hover:bg-gray-100 hover:text-primary-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400'
 					}`}
 					aria-label="Sign out"
 					onclick={handleLogoutClick}

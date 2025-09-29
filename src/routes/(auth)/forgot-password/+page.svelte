@@ -40,13 +40,13 @@
 	}
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 	<div class="max-w-md w-full space-y-8">
 		<div>
-			<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+			<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
 				{emailSent ? 'Check your email' : 'Forgot your password?'}
 			</h2>
-			<p class="mt-2 text-center text-sm text-gray-600">
+			<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
 				{#if emailSent}
 					We've sent a password reset link to your email address.
 				{:else}
@@ -56,7 +56,7 @@
 		</div>
 
 		<div class="flex justify-center">
-			<Card class="p-6 w-full max-w-md">
+			<Card class="p-6 w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
 				{#if errorMessage}
 					<Alert color="red" class="mb-4">
 						{errorMessage}
@@ -66,7 +66,7 @@
 				{#if emailSent}
 					<div class="text-center space-y-4">
 						<div
-							class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100"
+							class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/40"
 						>
 							<svg
 								class="h-6 w-6 text-green-600"
@@ -83,8 +83,10 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900">Email sent successfully!</h3>
-							<p class="text-sm text-gray-600 mt-2">
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white">
+								Email sent successfully!
+							</h3>
+							<p class="text-sm text-gray-600 mt-2 dark:text-gray-300">
 								We've sent a password reset link to <strong>{email}</strong>. Please check your
 								email and follow the instructions to reset your password.
 							</p>
@@ -99,8 +101,8 @@
 				{:else}
 					<form on:submit|preventDefault={handleForgotPassword} class="space-y-6">
 						<div>
-							<Label for="email" class="block text-sm font-medium text-gray-700"
-								>Email address</Label
+							<Label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+								Email address</Label
 							>
 							<Input
 								id="email"
@@ -118,9 +120,12 @@
 					</form>
 
 					<div class="mt-6 text-center">
-						<p class="text-sm text-gray-600">
+						<p class="text-sm text-gray-600 dark:text-gray-300">
 							Remember your password?
-							<a href="/login" class="font-medium text-primary-600 hover:text-primary-500">
+							<a
+								href="/login"
+								class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+							>
 								Sign in here
 							</a>
 						</p>
@@ -131,9 +136,14 @@
 
 		{#if !emailSent}
 			<div class="text-center">
-				<p class="text-xs text-gray-500">
+				<p class="text-xs text-gray-500 dark:text-gray-400">
 					If you don't receive an email within a few minutes, check your spam folder or
-					<a href="/contact" class="text-primary-600 hover:text-primary-500">contact support</a>.
+					<a
+						href="/contact"
+						class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+					>
+						contact support
+					</a>.
 				</p>
 			</div>
 		{/if}
