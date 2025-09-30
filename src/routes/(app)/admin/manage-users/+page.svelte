@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Alert, Button } from 'flowbite-svelte';
+	import { Alert, Button, Drawer, Input, Label, Select } from 'flowbite-svelte';
+	import { invalidate } from '$app/navigation';
 	import type { PageData } from './$types';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
@@ -21,16 +22,9 @@
 
 	type RoleFilter = 'All' | string;
 
-	export let data: PageData;
+	const statusOptions: readonly UserStatus[] = ['Active', 'Invited', 'Suspended'];
 
-	let searchQuery = '';
-	let roleFilter: RoleFilter = 'All';
-	let serverUsers: readonly ManageableUser[] = [];
-	let serverError: string | null = null;
-	let roleOptions: readonly string[] = ['All'];
-	let users: UserRecord[] = [];
-	let filteredUsers: UserRecord[] = [];
-	let stats: readonly StatCard[] = [];
+	export let data: PageData;
 
 	const statusStyles: Record<UserStatus, string> = {
 		Active: 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300',
@@ -38,13 +32,165 @@
 		Suspended: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300'
 	};
 
+	let searchQuery = '';
+	let roleFilter: RoleFilter = 'All';
+	let serverUsers: readonly ManageableUser[] = [];
+	let serverError: string | null = null;
+	let roleOptions: readonly string[] = ['All'];
+	let formRoleOptions: readonly string[] = [];
+	let users: UserRecord[] = [];
+	let filteredUsers: UserRecord[] = [];
+	let stats: readonly StatCard[] = [];
+	let isDrawerOpen = false;
+	let selectedUserId: string | null = null;
+	let selectedUser: ManageableUser | null = null;
+	let selectedDisplayUser: UserRecord | null = null;
+	let formFullName = '';
+	let formEmail = '';
+	let formRole = 'Member';
+	let formStatus: UserStatus = 'Active';
+	let isSaving = false;
+	let formMessage: string | null = null;
+	let formMessageTone: 'success' | 'error' | 'info' | null = null;
+	let drawerWasOpen = false;
+
 	$: serverUsers = (data.users ?? []) as readonly ManageableUser[];
 	$: serverError = data.error ?? null;
 	$: roleOptions = computeRoleOptions(serverUsers);
+	$: formRoleOptions = roleOptions.filter((option) => option !== 'All');
 	$: users = serverUsers.map(toDisplayUser);
 	$: filteredUsers = filterUsers(users, searchQuery, roleFilter);
 	$: stats = computeStats(serverUsers);
 	$: roleFilter = normalizeRoleFilter(roleFilter, roleOptions);
+	$: selectedUser = selectedUserId
+		? (serverUsers.find((candidate) => candidate.id === selectedUserId) ?? null)
+		: null;
+	$: selectedDisplayUser = selectedUserId
+		? (users.find((user) => user.id === selectedUserId) ?? null)
+		: null;
+	$: if (isDrawerOpen && selectedUserId && !selectedUser) {
+		console.warn('Selected user is no longer available. Closing editor.');
+		isDrawerOpen = false;
+	}
+	$: if (!isDrawerOpen && drawerWasOpen) {
+		resetDrawerState();
+	}
+	$: drawerWasOpen = isDrawerOpen;
+
+	function resetDrawerState() {
+		if (selectedUserId !== null) {
+			selectedUserId = null;
+		}
+		if (isSaving) {
+			isSaving = false;
+		}
+		if (formMessage !== null) {
+			formMessage = null;
+		}
+		if (formMessageTone !== null) {
+			formMessageTone = null;
+		}
+		formFullName = '';
+		formEmail = '';
+		formRole = 'Member';
+		formStatus = 'Active';
+	}
+
+	function closeDrawer() {
+		isDrawerOpen = false;
+	}
+
+	function handleEditClick(user: UserRecord) {
+		const baseUser = serverUsers.find((candidate) => candidate.id === user.id);
+		if (!baseUser) {
+			console.warn('Unable to locate user in admin list for editing', user.id);
+			return;
+		}
+
+		const fallbackName =
+			baseUser.fullName && baseUser.fullName.trim().length > 0
+				? baseUser.fullName
+				: deriveDisplayName(baseUser);
+
+		selectedUserId = baseUser.id;
+		formFullName = fallbackName;
+		formEmail = baseUser.email;
+		formRole = baseUser.role;
+		formStatus = baseUser.status;
+		formMessage = null;
+		formMessageTone = null;
+		isSaving = false;
+		isDrawerOpen = true;
+	}
+
+	async function handleFormSubmit() {
+		if (!selectedUserId) {
+			return;
+		}
+
+		const trimmedEmail = formEmail.trim();
+		const trimmedFullName = formFullName.trim();
+		const trimmedRole = formRole.trim() || 'Member';
+
+		if (!trimmedEmail) {
+			formMessageTone = 'error';
+			formMessage = 'Email cannot be empty.';
+			return;
+		}
+
+		isSaving = true;
+		formMessage = null;
+		formMessageTone = null;
+
+		try {
+			const response = await fetch(`/api/admin/users/${selectedUserId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					fullName: trimmedFullName,
+					email: trimmedEmail,
+					role: trimmedRole,
+					status: formStatus
+				})
+			});
+
+			if (!response.ok) {
+				let message = 'Unable to update user right now. Please try again later.';
+				try {
+					const errorBody = (await response.json()) as { error?: string };
+					if (errorBody?.error) {
+						message = errorBody.error;
+					}
+				} catch (parseError) {
+					console.warn('Failed to parse error payload while updating user', parseError);
+				}
+				formMessageTone = 'error';
+				formMessage = message;
+				return;
+			}
+
+			const data = (await response.json()) as { user?: ManageableUser };
+			if (data.user) {
+				formFullName = data.user.fullName ?? '';
+				formEmail = data.user.email;
+				formRole = data.user.role;
+				formStatus = data.user.status;
+			}
+
+			await invalidate('/api/admin/users');
+			formMessageTone = 'success';
+			formMessage = 'User updated successfully.';
+			closeDrawer();
+		} catch (error) {
+			console.error('Failed to update user', error);
+			formMessageTone = 'error';
+			formMessage = 'Unable to update user right now. Please try again later.';
+		} finally {
+			isSaving = false;
+		}
+	}
 
 	function computeRoleOptions(users: readonly ManageableUser[]): readonly string[] {
 		const uniqueRoles = new Set(
@@ -369,6 +515,7 @@
 											<button
 												type="button"
 												class="font-medium text-primary-600 transition hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+												on:click={() => handleEditClick(user)}
 											>
 												Edit
 											</button>
@@ -388,4 +535,142 @@
 			</div>
 		</div>
 	</section>
+
+	<Drawer bind:open={isDrawerOpen} placement="right" width="half" outsideclose>
+		<div
+			class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700"
+		>
+			<div>
+				<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+					Edit user
+				</p>
+				<h2 class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
+					{formFullName || selectedDisplayUser?.name || 'User details'}
+				</h2>
+			</div>
+			<button
+				type="button"
+				class="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+				on:click={closeDrawer}
+				aria-label="Close drawer"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+					/>
+				</svg>
+			</button>
+		</div>
+
+		<div class="flex flex-col gap-6 p-6">
+			{#if selectedDisplayUser}
+				<div
+					class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900"
+				>
+					<p class="font-medium text-gray-900 dark:text-white">{selectedDisplayUser.name}</p>
+					<p class="text-xs text-gray-500 dark:text-gray-400">{selectedDisplayUser.email}</p>
+					<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+						Last active: {selectedDisplayUser.lastActive}
+					</p>
+					{#if selectedUser}
+						<p class="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
+							User ID: {selectedUser.id}
+						</p>
+					{/if}
+				</div>
+			{/if}
+
+			{#if formMessage}
+				<Alert
+					color={formMessageTone === 'error'
+						? 'red'
+						: formMessageTone === 'success'
+							? 'green'
+							: 'cyan'}
+					class="text-sm"
+				>
+					{formMessage}
+				</Alert>
+			{/if}
+
+			<form class="space-y-5" on:submit|preventDefault={handleFormSubmit}>
+				<div class="space-y-2">
+					<Label for="edit-full-name">Full name</Label>
+					<Input
+						id="edit-full-name"
+						name="fullName"
+						placeholder="Full name"
+						autocomplete="name"
+						bind:value={formFullName}
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<Label for="edit-email">Email</Label>
+					<Input
+						id="edit-email"
+						name="email"
+						type="email"
+						placeholder="Email address"
+						autocomplete="email"
+						bind:value={formEmail}
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<Label for="edit-role">Role</Label>
+					<Select id="edit-role" bind:value={formRole}>
+						{#if formRoleOptions.length === 0}
+							<option value={formRole}>{formRole || 'Member'}</option>
+						{:else}
+							{#each formRoleOptions as option (option)}
+								<option value={option}>{option}</option>
+							{/each}
+						{/if}
+					</Select>
+				</div>
+
+				<div class="space-y-2">
+					<Label for="edit-status">Status</Label>
+					<Select id="edit-status" bind:value={formStatus}>
+						{#each statusOptions as option (option)}
+							<option value={option}>{option}</option>
+						{/each}
+					</Select>
+				</div>
+
+				<div class="flex flex-col gap-3 pt-2">
+					<div class="flex justify-end gap-2">
+						<button
+							type="button"
+							class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							on:click={closeDrawer}
+							disabled={isSaving}
+						>
+							Cancel
+						</button>
+						<button
+							type="submit"
+							class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-primary-500 dark:hover:bg-primary-400"
+							disabled={isSaving || !selectedUser}
+						>
+							{#if isSaving}
+								Saving…
+							{:else}
+								Save changes
+							{/if}
+						</button>
+					</div>
+					<p class="text-xs text-gray-500 dark:text-gray-400">
+						Updates are currently local only. Connect this form to a Supabase admin endpoint to
+						persist changes.
+					</p>
+				</div>
+			</form>
+		</div>
+	</Drawer>
 </div>

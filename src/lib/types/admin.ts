@@ -15,3 +15,16 @@ export type ManageUsersPayload = {
 	users: ManageableUser[];
 	error: string | null;
 };
+
+export type UpdateUserInput = {
+	fullName: string;
+	email: string;
+	role: string;
+	status: UserStatus;
+};
+
+export type UpdateUserResult = {
+	user: ManageableUser | null;
+	message: string | null;
+	status: number;
+};

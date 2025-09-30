@@ -1,6 +1,12 @@
 import type { User } from '@supabase/supabase-js';
 import { getSupabaseAdminClient } from './supabaseAdmin';
-import type { ManageableUser, ManageUsersPayload, UserStatus } from '$lib/types/admin';
+import type {
+	ManageableUser,
+	ManageUsersPayload,
+	UpdateUserInput,
+	UpdateUserResult,
+	UserStatus
+} from '$lib/types/admin';
 
 const DEFAULT_ROLE = 'Member';
 
@@ -89,4 +95,90 @@ export async function listManageableUsers(): Promise<ManageUsersPayload> {
 		users: (data?.users ?? []).map(transformUser),
 		error: null
 	};
+}
+
+export async function updateManageableUser(
+	id: string,
+	input: UpdateUserInput
+): Promise<UpdateUserResult> {
+	const supabaseAdmin = getSupabaseAdminClient();
+
+	if (!supabaseAdmin) {
+		return {
+			user: null,
+			message:
+				'Supabase service key missing. Set SUPABASE_SERVICE_ROLE_KEY to enable user management.',
+			status: 500
+		};
+	}
+
+	const fullName = input.fullName.trim();
+	const email = input.email.trim();
+	const role = input.role.trim() || 'Member';
+	const status = input.status;
+
+	if (!email) {
+		return {
+			user: null,
+			message: 'Email is required to update a user.',
+			status: 400
+		};
+	}
+
+	const attributes: {
+		email?: string;
+		user_metadata?: Record<string, unknown>;
+		app_metadata?: Record<string, unknown>;
+		ban_duration?: string;
+	} = {
+		email,
+		user_metadata: {
+			full_name: fullName,
+			name: fullName
+		},
+		app_metadata: {
+			role
+		}
+	};
+
+	if (status === 'Suspended') {
+		// Ban user for 10 years (effectively indefinite) until proper policy changes are added
+		attributes.ban_duration = '315360000';
+	} else if (status === 'Active') {
+		attributes.ban_duration = 'none';
+	}
+
+	try {
+		const { data, error } = await supabaseAdmin.auth.admin.updateUserById(id, attributes);
+		if (error) {
+			console.error('Failed to update Supabase user', error);
+			return {
+				user: null,
+				message: error.message ?? 'Unable to update user right now.',
+				status: 400
+			};
+		}
+
+		const updatedUser = data?.user ?? null;
+		if (!updatedUser) {
+			return {
+				user: null,
+				message: 'Supabase did not return the updated user.',
+				status: 500
+			};
+		}
+
+		return {
+			user: transformUser(updatedUser),
+			message: null,
+			status: 200
+		};
+	} catch (error) {
+		console.error('Unexpected error updating Supabase user', error);
+		return {
+			user: null,
+			message: 'Unexpected error updating user.',
+			status: 500
+		};
+	}
 }
