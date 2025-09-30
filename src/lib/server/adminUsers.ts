@@ -142,8 +142,7 @@ export async function updateManageableUser(
 	};
 
 	if (status === 'Suspended') {
-		// Ban user for 10 years (effectively indefinite) until proper policy changes are added
-		attributes.ban_duration = '315360000';
+		attributes.ban_duration = '87600h';
 	} else if (status === 'Active') {
 		attributes.ban_duration = 'none';
 	}

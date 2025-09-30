@@ -22,7 +22,6 @@
 
 	type RoleFilter = 'All' | string;
 
-	const statusOptions: readonly UserStatus[] = ['Active', 'Invited', 'Suspended'];
 	const defaultRoleOptions = ['Owner', 'Admin', 'Member'];
 
 	export let data: PageData;
@@ -117,7 +116,7 @@
 		formFullName = fallbackName;
 		formEmail = baseUser.email;
 		formRole = baseUser.role;
-		formStatus = baseUser.status;
+		formStatus = baseUser.status === 'Suspended' ? 'Suspended' : 'Active';
 		formMessage = null;
 		formMessageTone = null;
 		isSaving = false;
@@ -132,6 +131,7 @@
 		const trimmedEmail = formEmail.trim();
 		const trimmedFullName = formFullName.trim();
 		const trimmedRole = formRole.trim() || 'Member';
+		const nextStatus: UserStatus = formStatus === 'Suspended' ? 'Suspended' : 'Active';
 
 		if (!trimmedEmail) {
 			formMessageTone = 'error';
@@ -153,7 +153,7 @@
 					fullName: trimmedFullName,
 					email: trimmedEmail,
 					role: trimmedRole,
-					status: formStatus
+					status: nextStatus
 				})
 			});
 
@@ -177,7 +177,7 @@
 				formFullName = data.user.fullName ?? '';
 				formEmail = data.user.email;
 				formRole = data.user.role;
-				formStatus = data.user.status;
+				formStatus = data.user.status === 'Suspended' ? 'Suspended' : 'Active';
 			}
 
 			await invalidate('/api/admin/users');
@@ -629,16 +629,17 @@
 					</Select>
 				</div>
 
-				<div class="space-y-2">
-					<Label for="edit-status">Status</Label>
-					<Select id="edit-status" bind:value={formStatus}>
-						{#each statusOptions as option (option)}
-							<option value={option}>{option}</option>
-						{/each}
-					</Select>
-				</div>
-
 				<div class="flex flex-col gap-3 pt-2">
+					<div class="space-y-2">
+						<Label for="edit-status">Status</Label>
+						<Select id="edit-status" bind:value={formStatus}>
+							<option value="Active">Active</option>
+							<option value="Suspended">Suspended</option>
+						</Select>
+						<p class="text-xs text-gray-500 dark:text-gray-400">
+							Suspended users cannot sign in until you mark them Active again.
+						</p>
+					</div>
 					<div class="flex justify-end gap-2">
 						<button
 							type="button"
