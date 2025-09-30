@@ -38,10 +38,11 @@ pnpm install
 
 2. **Copy the local credentials** from the terminal output and create a `.env` file:
 
-   ```env
-   VITE_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-   VITE_PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key_from_terminal
-   ```
+```env
+VITE_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+VITE_PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key_from_terminal
+SUPABASE_SERVICE_ROLE_KEY=your_local_service_role_key_from_terminal
+```
 
 3. **Access Supabase Studio** at `http://localhost:54323` to manage your local database
 
@@ -129,6 +130,7 @@ Make sure to set these environment variables:
 
 - `VITE_PUBLIC_SUPABASE_URL`: Your Supabase project URL
 - `VITE_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY`: Required for admin-only features such as listing all users (keep this private; never expose it to the client)
 
 ## Troubleshooting
 

@@ -1,115 +1,217 @@
 <script lang="ts">
-	import { Button } from 'flowbite-svelte';
+	import { Alert, Button } from 'flowbite-svelte';
+	import type { PageData } from './$types';
+	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
-	type Role = 'Owner' | 'Admin' | 'Member';
-	type Status = 'Active' | 'Invited' | 'Suspended';
+	type StatCard = {
+		label: string;
+		value: number;
+		helper: string;
+	};
 
 	type UserRecord = {
+		id: string;
 		name: string;
 		email: string;
-		role: Role;
-		status: Status;
+		role: string;
+		status: UserStatus;
 		lastActive: string;
 		initials: string;
 	};
 
-	const users: readonly UserRecord[] = [
-		{
-			name: 'Alex Johnson',
-			email: 'alex.johnson@example.com',
-			role: 'Owner',
-			status: 'Active',
-			lastActive: '2 minutes ago',
-			initials: 'AJ'
-		},
-		{
-			name: 'Priya Patel',
-			email: 'priya.patel@example.com',
-			role: 'Admin',
-			status: 'Active',
-			lastActive: '12 minutes ago',
-			initials: 'PP'
-		},
-		{
-			name: 'Morgan Lee',
-			email: 'morgan.lee@example.com',
-			role: 'Admin',
-			status: 'Invited',
-			lastActive: 'Awaiting acceptance',
-			initials: 'ML'
-		},
-		{
-			name: 'Diego Alvarez',
-			email: 'diego.alvarez@example.com',
-			role: 'Member',
-			status: 'Active',
-			lastActive: '1 hour ago',
-			initials: 'DA'
-		},
-		{
-			name: 'Sofia Martins',
-			email: 'sofia.martins@example.com',
-			role: 'Member',
-			status: 'Active',
-			lastActive: 'Yesterday',
-			initials: 'SM'
-		},
-		{
-			name: 'Evan Brooks',
-			email: 'evan.brooks@example.com',
-			role: 'Member',
-			status: 'Invited',
-			lastActive: 'Awaiting acceptance',
-			initials: 'EB'
-		}
-	];
+	type RoleFilter = 'All' | string;
 
-	type RoleFilter = 'All' | Role;
+	export let data: PageData;
 
-	const roleOptions: readonly RoleFilter[] = ['All', 'Owner', 'Admin', 'Member'];
-	const statusStyles: Record<Status, string> = {
+	let searchQuery = '';
+	let roleFilter: RoleFilter = 'All';
+	let serverUsers: readonly ManageableUser[] = [];
+	let serverError: string | null = null;
+	let roleOptions: readonly string[] = ['All'];
+	let users: UserRecord[] = [];
+	let filteredUsers: UserRecord[] = [];
+	let stats: readonly StatCard[] = [];
+
+	const statusStyles: Record<UserStatus, string> = {
 		Active: 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300',
 		Invited: 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300',
 		Suspended: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300'
 	};
 
-	const stats = [
-		{
-			label: 'Total members',
-			value: users.length,
-			helper: 'Including pending invites'
-		},
-		{
-			label: 'Active members',
-			value: users.filter((user) => user.status === 'Active').length,
-			helper: 'Currently able to sign in'
-		},
-		{
-			label: 'Admins & owners',
-			value: users.filter((user) => user.role === 'Owner' || user.role === 'Admin').length,
-			helper: 'Have elevated permissions'
-		},
-		{
-			label: 'Pending invites',
-			value: users.filter((user) => user.status === 'Invited').length,
-			helper: 'Waiting to join your team'
-		}
-	] as const;
+	$: serverUsers = (data.users ?? []) as readonly ManageableUser[];
+	$: serverError = data.error ?? null;
+	$: roleOptions = computeRoleOptions(serverUsers);
+	$: users = serverUsers.map(toDisplayUser);
+	$: filteredUsers = filterUsers(users, searchQuery, roleFilter);
+	$: stats = computeStats(serverUsers);
+	$: roleFilter = normalizeRoleFilter(roleFilter, roleOptions);
 
-	let searchQuery = $state('');
-	let roleFilter = $state<RoleFilter>('All');
-	let filteredUsers = $state<UserRecord[]>(users.slice());
+	function computeRoleOptions(users: readonly ManageableUser[]): readonly string[] {
+		const uniqueRoles = new Set(
+			users.map((user) => user.role.trim()).filter((role) => role.length > 0)
+		);
+		const sortedRoles = Array.from(uniqueRoles).sort((a, b) => a.localeCompare(b));
+		return ['All', ...sortedRoles];
+	}
 
-	$effect(() => {
-		const query = searchQuery.trim().toLowerCase();
-		filteredUsers = users.filter((user) => {
+	function filterUsers(
+		allUsers: readonly UserRecord[],
+		queryRaw: string,
+		role: RoleFilter
+	): UserRecord[] {
+		const query = queryRaw.trim().toLowerCase();
+		return allUsers.filter((user) => {
 			const matchesSearch =
-				!query ||
+				query.length === 0 ||
 				[user.name, user.email, user.role].some((field) => field.toLowerCase().includes(query));
-			const matchesRole = roleFilter === 'All' || user.role === roleFilter;
+			const matchesRole = role === 'All' || user.role === role;
 			return matchesSearch && matchesRole;
 		});
-	});
+	}
+
+	function computeStats(users: readonly ManageableUser[]): readonly StatCard[] {
+		const totalMembers = users.length;
+		const activeMembers = users.filter((user) => user.status === 'Active').length;
+		const adminSeats = users.filter((user) => {
+			const role = user.role.toLowerCase();
+			return role === 'owner' || role === 'admin';
+		}).length;
+		const pendingInvites = users.filter((user) => user.status === 'Invited').length;
+
+		return [
+			{
+				label: 'Total members',
+				value: totalMembers,
+				helper: 'Including pending invites'
+			},
+			{
+				label: 'Active members',
+				value: activeMembers,
+				helper: 'Currently able to sign in'
+			},
+			{
+				label: 'Admins & owners',
+				value: adminSeats,
+				helper: 'Have elevated permissions'
+			},
+			{
+				label: 'Pending invites',
+				value: pendingInvites,
+				helper: 'Waiting to join your team'
+			}
+		];
+	}
+
+	function normalizeRoleFilter(current: RoleFilter, options: readonly string[]): RoleFilter {
+		if (current !== 'All' && !options.includes(current)) {
+			return 'All';
+		}
+		return current;
+	}
+
+	function toDisplayUser(user: ManageableUser): UserRecord {
+		const name = deriveDisplayName(user);
+		return {
+			id: user.id,
+			name,
+			email: user.email,
+			role: user.role,
+			status: user.status,
+			lastActive: formatLastActive(user),
+			initials: deriveInitials(name, user.email)
+		};
+	}
+
+	function deriveDisplayName(user: ManageableUser): string {
+		if (user.fullName && user.fullName.trim().length > 0) {
+			return user.fullName.trim();
+		}
+
+		const email = user.email ?? '';
+		const localPart = email.split('@')[0] ?? '';
+		if (localPart.length === 0) {
+			return 'Unnamed user';
+		}
+
+		return localPart
+			.split(/[._-]+/)
+			.filter(Boolean)
+			.map((part) => part[0]?.toUpperCase() + part.slice(1))
+			.join(' ');
+	}
+
+	function deriveInitials(name: string, email: string): string {
+		const initialsFromName = name
+			.split(/\s+/)
+			.filter(Boolean)
+			.map((part) => part[0]?.toUpperCase() ?? '')
+			.join('')
+			.slice(0, 2);
+
+		if (initialsFromName.length === 2) {
+			return initialsFromName;
+		}
+
+		const emailInitials = email
+			.split('@')[0]
+			?.split(/[._-]+/)
+			.filter(Boolean)
+			.map((part) => part[0]?.toUpperCase() ?? '')
+			.join('')
+			.slice(0, 2);
+
+		return (initialsFromName + emailInitials).slice(0, 2) || 'NA';
+	}
+
+	function formatLastActive(user: ManageableUser): string {
+		const sourceTimestamp = user.lastSignInAt ?? user.createdAt;
+		if (!sourceTimestamp) {
+			return 'Never signed in';
+		}
+
+		const activityDate = new Date(sourceTimestamp);
+		if (Number.isNaN(activityDate.getTime())) {
+			return 'Last activity unknown';
+		}
+
+		const now = Date.now();
+		const diffMs = now - activityDate.getTime();
+
+		if (diffMs < 0) {
+			return 'Scheduled in future';
+		}
+
+		const minute = 60_000;
+		const hour = 60 * minute;
+		const day = 24 * hour;
+		const week = 7 * day;
+
+		if (diffMs < minute) {
+			return 'Just now';
+		}
+		if (diffMs < hour) {
+			const minutes = Math.round(diffMs / minute);
+			return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+		}
+		if (diffMs < day) {
+			const hours = Math.round(diffMs / hour);
+			return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+		}
+		if (diffMs < week) {
+			const days = Math.round(diffMs / day);
+			return `${days} day${days === 1 ? '' : 's'} ago`;
+		}
+		if (diffMs < 5 * week) {
+			const weeks = Math.round(diffMs / week);
+			return `${weeks} week${weeks === 1 ? '' : 's'} ago`;
+		}
+
+		return activityDate.toLocaleDateString(undefined, {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		});
+	}
 </script>
 
 <div class="space-y-10 px-4 py-10 sm:px-8 xl:px-12">
@@ -124,6 +226,15 @@
 		</div>
 		<Button color="primary" class="h-10 whitespace-nowrap">Invite member</Button>
 	</section>
+
+	{#if serverError}
+		<Alert
+			color="amber"
+			class="border border-amber-200 bg-amber-50/60 text-amber-800 dark:border-amber-500/50 dark:bg-amber-500/10 dark:text-amber-200"
+		>
+			{serverError}
+		</Alert>
+	{/if}
 
 	<section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 		{#each stats as stat (stat.label)}
@@ -221,11 +332,13 @@
 									colspan="5"
 									class="px-4 py-10 text-center text-sm text-gray-500 dark:text-gray-400"
 								>
-									No teammates match your filters yet.
+									{serverUsers.length === 0
+										? 'No users found. Add teammates to see them listed here.'
+										: 'No teammates match your filters yet.'}
 								</td>
 							</tr>
 						{:else}
-							{#each filteredUsers as user (user.email)}
+							{#each filteredUsers as user (user.id)}
 								<tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
 									<td class="px-4 py-4 text-sm">
 										<div class="flex items-center gap-3">

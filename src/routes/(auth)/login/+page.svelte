@@ -5,7 +5,16 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { resolve } from '$app/paths';
-	type RouteTarget = Parameters<typeof resolve>[0];
+
+	function parseDestination(raw: string): { pathname: string; search: string; hash: string } {
+		try {
+			const url = new URL(raw, 'http://localhost');
+			return { pathname: url.pathname, search: url.search, hash: url.hash };
+		} catch (error) {
+			console.warn('Invalid redirect destination supplied, falling back to root', error);
+			return { pathname: '/', search: '', hash: '' };
+		}
+	}
 
 	let email = '';
 	let password = '';
@@ -34,7 +43,35 @@
 				const redirectParam = get(page).url.searchParams.get('redirectTo');
 				const decodedDestination = redirectParam ? decodeURIComponent(redirectParam) : '/';
 				const destination = decodedDestination.startsWith('/') ? decodedDestination : '/';
-				await goto(resolve(destination as RouteTarget));
+				const { pathname, search, hash } = parseDestination(destination);
+				let routeId: '/(app)/admin' | '/(app)/admin/manage-users' | '/(app)/profile' | '/' = '/';
+
+				switch (pathname) {
+					case '/admin':
+						routeId = '/(app)/admin';
+						break;
+					case '/admin/manage-users':
+						routeId = '/(app)/admin/manage-users';
+						break;
+					case '/profile':
+						routeId = '/(app)/profile';
+						break;
+					case '/':
+					default:
+						routeId = '/';
+				}
+
+				const resolvedPath = resolve(routeId);
+				await goto(resolvedPath);
+
+				if ((search && search !== '?') || hash) {
+					const finalHref = `${resolvedPath}${search}${hash}`;
+					try {
+						globalThis.history?.replaceState?.(null, '', finalHref);
+					} catch (historyError) {
+						console.warn('Unable to preserve redirect query parameters after login', historyError);
+					}
+				}
 			}
 		} catch (err) {
 			errorMessage = 'An unexpected error occurred. Please try again.';
