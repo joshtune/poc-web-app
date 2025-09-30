@@ -114,7 +114,7 @@
 				helper: 'Currently able to sign in'
 			},
 			{
-				label: 'Admins & owners',
+				label: 'Admins & Owners',
 				value: adminSeats,
 				helper: 'Have elevated permissions'
 			},
