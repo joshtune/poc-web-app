@@ -23,6 +23,7 @@
 	type RoleFilter = 'All' | string;
 
 	const statusOptions: readonly UserStatus[] = ['Active', 'Invited', 'Suspended'];
+	const defaultRoleOptions = ['Owner', 'Admin', 'Member'];
 
 	export let data: PageData;
 
@@ -57,7 +58,7 @@
 	$: serverUsers = (data.users ?? []) as readonly ManageableUser[];
 	$: serverError = data.error ?? null;
 	$: roleOptions = computeRoleOptions(serverUsers);
-	$: formRoleOptions = roleOptions.filter((option) => option !== 'All');
+	$: formRoleOptions = computeFormRoleOptions(roleOptions);
 	$: users = serverUsers.map(toDisplayUser);
 	$: filteredUsers = filterUsers(users, searchQuery, roleFilter);
 	$: stats = computeStats(serverUsers);
@@ -198,6 +199,24 @@
 		);
 		const sortedRoles = Array.from(uniqueRoles).sort((a, b) => a.localeCompare(b));
 		return ['All', ...sortedRoles];
+	}
+
+	function computeFormRoleOptions(navRoleOptions: readonly string[]): readonly string[] {
+		const combinedRoles = [
+			...defaultRoleOptions,
+			...navRoleOptions.filter((role) => role !== 'All')
+		]
+			.map((role) => role.trim())
+			.filter((role) => role.length > 0);
+
+		const uniqueRoles: string[] = [];
+		for (const role of combinedRoles) {
+			if (!uniqueRoles.includes(role)) {
+				uniqueRoles.push(role);
+			}
+		}
+
+		return uniqueRoles.sort((a, b) => a.localeCompare(b));
 	}
 
 	function filterUsers(
