@@ -219,7 +219,7 @@
 								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 px-1"
 							>
 								Terms and Conditions
-                            </a>
+							</a>
 							and
 							<a
 								href={resolve('/privacy')}
