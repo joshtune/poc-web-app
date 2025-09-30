@@ -183,7 +183,7 @@
 			await invalidate('/api/admin/users');
 			formMessageTone = 'success';
 			formMessage = 'User updated successfully.';
-			closeDrawer();
+            setTimeout(closeDrawer, 800);
 		} catch (error) {
 			console.error('Failed to update user', error);
 			formMessageTone = 'error';
@@ -549,120 +549,119 @@
 		</div>
 	</section>
 
-	<Drawer bind:open={isDrawerOpen} placement="right" width="half" outsideclose>
-		<div class="flex items-center border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-			<div>
-				<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-					Edit user
-				</p>
-				<h2 class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
-					{formFullName || selectedDisplayUser?.name || 'User details'}
-				</h2>
-			</div>
-		</div>
+</div>
 
-		<div class="flex flex-col gap-6 p-6">
-			{#if selectedDisplayUser}
-				<div
-					class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900"
-				>
-					<p class="font-medium text-gray-900 dark:text-white">{selectedDisplayUser.name}</p>
-					<p class="text-xs text-gray-500 dark:text-gray-400">{selectedDisplayUser.email}</p>
-					<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-						Last active: {selectedDisplayUser.lastActive}
-					</p>
-					{#if selectedUser}
-						<p class="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
-							User ID: {selectedUser.id}
-						</p>
-					{/if}
-				</div>
-			{/if}
+<Drawer bind:open={isDrawerOpen} placement="right" width="half" outsideclose>
+    <div class="flex items-center border-b border-gray-200 pb-6 dark:border-gray-700">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Edit user
+            </p>
+            <h2 class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
+                {formFullName || selectedDisplayUser?.name || 'User details'}
+            </h2>
+        </div>
+    </div>
 
-			{#if formMessage}
-				<Alert
-					color={formMessageTone === 'error'
+    <div class="flex flex-col gap-6 py-6">
+        {#if selectedDisplayUser}
+            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                <p class="font-medium text-gray-900 dark:text-white">{selectedDisplayUser.name}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{selectedDisplayUser.email}</p>
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    Last active: {selectedDisplayUser.lastActive}
+                </p>
+                {#if selectedUser}
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
+                        User ID: {selectedUser.id}
+                    </p>
+                {/if}
+            </div>
+        {/if}
+
+        {#if formMessage}
+            <Alert
+                    color={formMessageTone === 'error'
 						? 'red'
 						: formMessageTone === 'success'
 							? 'green'
 							: 'cyan'}
-					class="text-sm"
-				>
-					{formMessage}
-				</Alert>
-			{/if}
+                    class="text-sm"
+            >
+                {formMessage}
+            </Alert>
+        {/if}
 
-			<form class="space-y-5" on:submit|preventDefault={handleFormSubmit}>
-				<div class="space-y-2">
-					<Label for="edit-full-name">Full name</Label>
-					<Input
-						id="edit-full-name"
-						name="fullName"
-						placeholder="Full name"
-						autocomplete="name"
-						bind:value={formFullName}
-					/>
-				</div>
+        <form class="space-y-5" on:submit|preventDefault={handleFormSubmit}>
+            <div class="space-y-2">
+                <Label for="edit-full-name">Full name</Label>
+                <Input
+                        id="edit-full-name"
+                        name="fullName"
+                        placeholder="Full name"
+                        autocomplete="name"
+                        bind:value={formFullName}
+                />
+            </div>
 
-				<div class="space-y-2">
-					<Label for="edit-email">Email</Label>
-					<Input
-						id="edit-email"
-						name="email"
-						type="email"
-						placeholder="Email address"
-						autocomplete="email"
-						bind:value={formEmail}
-					/>
-				</div>
+            <div class="space-y-2">
+                <Label for="edit-email">Email</Label>
+                <Input
+                        id="edit-email"
+                        name="email"
+                        type="email"
+                        placeholder="Email address"
+                        autocomplete="email"
+                        bind:value={formEmail}
+                />
+            </div>
 
-				<div class="space-y-2">
-					<Label for="edit-role">Role</Label>
-					<Select id="edit-role" bind:value={formRole}>
-						{#if formRoleOptions.length === 0}
-							<option value={formRole}>{formRole || 'Member'}</option>
-						{:else}
-							{#each formRoleOptions as option (option)}
-								<option value={option}>{option}</option>
-							{/each}
-						{/if}
-					</Select>
-				</div>
+            <div class="space-y-2">
+                <Label for="edit-role">Role</Label>
+                <Select id="edit-role" bind:value={formRole}>
+                    {#if formRoleOptions.length === 0}
+                        <option value={formRole}>{formRole || 'Member'}</option>
+                    {:else}
+                        {#each formRoleOptions as option (option)}
+                            <option value={option}>{option}</option>
+                        {/each}
+                    {/if}
+                </Select>
+            </div>
 
-				<div class="flex flex-col gap-3 pt-2">
-					<div class="space-y-2">
-						<Label for="edit-status">Status</Label>
-						<Select id="edit-status" bind:value={formStatus}>
-							<option value="Active">Active</option>
-							<option value="Suspended">Suspended</option>
-						</Select>
-						<p class="text-xs text-gray-500 dark:text-gray-400">
-							Suspended users cannot sign in until you mark them Active again.
-						</p>
-					</div>
-					<div class="flex justify-end gap-2">
-						<button
-							type="button"
-							class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-							on:click={closeDrawer}
-							disabled={isSaving}
-						>
-							Cancel
-						</button>
-						<button
-							type="submit"
-							class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-primary-500 dark:hover:bg-primary-400"
-							disabled={isSaving || !selectedUser}
-						>
-							{#if isSaving}
-								Saving…
-							{:else}
-								Save changes
-							{/if}
-						</button>
-					</div>
-				</div>
-			</form>
-		</div>
-	</Drawer>
-</div>
+            <div class="flex flex-col gap-3 pt-2">
+                <div class="space-y-2">
+                    <Label for="edit-status">Status</Label>
+                    <Select id="edit-status" bind:value={formStatus}>
+                        <option value="Active">Active</option>
+                        <option value="Suspended">Suspended</option>
+                    </Select>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Suspended users cannot sign in until you mark them Active again.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <Button
+                    type="button"
+                    color="light"
+                    onclick={closeDrawer}
+                    disabled={isSaving}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    type="submit"
+                    disabled={isSaving || !selectedUser}
+                >
+                    {#if isSaving}
+                        Saving…
+                    {:else}
+                        Save changes
+                    {/if}
+                </Button>
+            </div>
+        </form>
+    </div>
+</Drawer>
