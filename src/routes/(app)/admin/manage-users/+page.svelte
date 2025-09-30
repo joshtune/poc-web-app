@@ -519,12 +519,6 @@
 											>
 												Edit
 											</button>
-											<button
-												type="button"
-												class="text-gray-500 transition hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-200"
-											>
-												More
-											</button>
 										</div>
 									</td>
 								</tr>
@@ -537,9 +531,7 @@
 	</section>
 
 	<Drawer bind:open={isDrawerOpen} placement="right" width="half" outsideclose>
-		<div
-			class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700"
-		>
+		<div class="flex items-center border-b border-gray-200 px-6 py-4 dark:border-gray-700">
 			<div>
 				<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
 					Edit user
@@ -548,22 +540,6 @@
 					{formFullName || selectedDisplayUser?.name || 'User details'}
 				</h2>
 			</div>
-			<button
-				type="button"
-				class="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-				on:click={closeDrawer}
-				aria-label="Close drawer"
-			>
-				<svg class="h-4 w-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-					/>
-				</svg>
-			</button>
 		</div>
 
 		<div class="flex flex-col gap-6 p-6">
@@ -665,10 +641,6 @@
 							{/if}
 						</button>
 					</div>
-					<p class="text-xs text-gray-500 dark:text-gray-400">
-						Updates are currently local only. Connect this form to a Supabase admin endpoint to
-						persist changes.
-					</p>
 				</div>
 			</form>
 		</div>
