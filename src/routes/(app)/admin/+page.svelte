@@ -6,7 +6,7 @@
 <div class="space-y-10 px-4 py-10 sm:px-8 xl:px-12">
 	<section class="flex flex-wrap items-start justify-between gap-6">
 		<div class="space-y-3">
-			<p class="text-sm font-medium text-primary-600">Administration</p>
+			<p class="text-sm font-medium text-primary-600">Admin</p>
 			<h1 class="text-4xl font-semibold text-gray-900 dark:text-white">Admin overview</h1>
 			<p class="max-w-2xl text-sm text-gray-500 dark:text-gray-300">
 				Monitor platform health, keep access secure, and guide teammates through onboarding.

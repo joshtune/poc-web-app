@@ -6,22 +6,11 @@
 	import { supabase } from '$lib/supabase';
 
 	let user: User | null = null;
-	let avatarUrl: string | null = null;
-	let isLoading = true;
-	let errorMessage = '';
-	let displayName = '';
 
 	onMount(async () => {
 		const { data, error } = await supabase.auth.getUser();
 
-		if (error) {
-			errorMessage = error.message;
-		}
-
 		user = data.user ?? null;
-		avatarUrl = user?.user_metadata?.avatar_url ?? null;
-		displayName = user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? user?.email ?? '';
-		isLoading = false;
 
 		if (!user && !error) {
 			await goto(resolve('/login'));
