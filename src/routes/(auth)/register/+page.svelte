@@ -148,8 +148,10 @@
 						<div>
 							<Label
 								for="lastName"
-								class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last name</Label
+								class="block text-sm font-medium text-gray-700 dark:text-gray-300"
 							>
+								Last name
+							</Label>
 							<Input
 								id="lastName"
 								type="text"
@@ -162,9 +164,9 @@
 					</div>
 
 					<div>
-						<Label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-							>Email address</Label
-						>
+						<Label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Email address
+						</Label>
 						<Input
 							id="email"
 							type="email"
@@ -176,9 +178,12 @@
 					</div>
 
 					<div>
-						<Label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-							>Password</Label
+						<Label
+							for="password"
+							class="block text-sm font-medium text-gray-700 dark:text-gray-300"
 						>
+							Password
+						</Label>
 						<Input
 							id="password"
 							type="password"
@@ -211,14 +216,14 @@
 							I agree to the
 							<a
 								href={resolve('/terms')}
-								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 px-1"
 							>
-								Terms and Conditions</a
-							>
+								Terms and Conditions
+                            </a>
 							and
 							<a
 								href={resolve('/privacy')}
-								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+								class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 px-1"
 							>
 								Privacy Policy
 							</a>
@@ -236,9 +241,9 @@
 							<div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
 						</div>
 						<div class="relative flex justify-center text-sm">
-							<span class="px-2 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-300"
-								>Or continue with</span
-							>
+							<span class="px-2 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-300">
+								Or continue with
+							</span>
 						</div>
 					</div>
 
