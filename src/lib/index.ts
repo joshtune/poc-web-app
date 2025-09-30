@@ -1,3 +1,9 @@
 export { theme, toggleTheme } from './stores/theme';
 export { default as ThemeToggle } from './components/ThemeToggle.svelte';
 export { default as UserEditDrawer } from './components/UserEditDrawer.svelte';
+export { default as UsersUsersStatsGrid } from './components/UsersStatsGrid.svelte';
+export { default as PageHeader } from './components/PageHeader.svelte';
+export { default as SearchAndFilter } from './components/SearchAndFilter.svelte';
+export { default as UserAvatar } from './components/UserAvatar.svelte';
+export { default as UsersTable } from './components/UsersTable.svelte';
+export { default as DataTable } from './components/DataTable.svelte';
