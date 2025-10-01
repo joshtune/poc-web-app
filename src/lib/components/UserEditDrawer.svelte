@@ -151,7 +151,7 @@
 	}
 </script>
 
-<Drawer bind:open={isOpen} placement="right" width="half" outsideclose>
+<Drawer bind:open={isOpen} placement="right" outsideclose>
 	<div class="flex items-center border-b border-gray-200 pb-6 dark:border-gray-700">
 		<div>
 			<p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
