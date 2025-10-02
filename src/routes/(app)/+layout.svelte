@@ -6,27 +6,18 @@
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { authState, primeAuthState, getAuthStateSnapshot } from '$lib/auth/sessionStore';
-	import type { AuthState } from '$lib/auth/sessionStore';
+	import { authUser, primeAuthState } from '$lib/auth/sessionStore';
 
 	let { children, data } = $props();
 
 	let isLoggingOut = $state(false);
 	let isSidebarOpen = $state(false);
-	let auth = $state<AuthState>(getAuthStateSnapshot());
 
 	$effect(() => {
 		primeAuthState(data?.session ?? null);
 	});
 
-	$effect(() => {
-		const unsubscribe = authState.subscribe((value) => {
-			auth = value;
-		});
-		return () => unsubscribe();
-	});
-
-	const user = $derived(auth.user);
+	const user = $derived($authUser);
 	const userRole = $derived(deriveUserRole(user));
 	const sidebarItems = $derived(filterNavItemsByRole(userRole));
 

@@ -1,4 +1,4 @@
-import { get, writable } from 'svelte/store';
+import { derived, readable, type Readable, get, writable } from 'svelte/store';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '$lib/supabase';
 
@@ -88,6 +88,16 @@ if (typeof window !== 'undefined') {
 export const authState = {
 	subscribe: authStore.subscribe
 };
+
+export function createAuthStateStore(): Readable<AuthState> {
+	return readable<AuthState>(get(authStore), (set) => authStore.subscribe(set));
+}
+
+export const authStateReadable = createAuthStateStore();
+
+export const authUser = derived(authStateReadable, (state) => state.user);
+
+export const authStatus = derived(authStateReadable, (state) => state.status);
 
 export function primeAuthState(session: Session | null): void {
 	if (typeof window === 'undefined') {

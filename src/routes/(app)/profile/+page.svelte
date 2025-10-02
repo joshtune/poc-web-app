@@ -1,22 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { authState, getAuthStateSnapshot } from '$lib/auth/sessionStore';
-	import type { AuthState } from '$lib/auth/sessionStore';
-
-	let auth = $state<AuthState>(getAuthStateSnapshot());
-
-	$effect(() => {
-		const unsubscribe = authState.subscribe((value) => {
-			auth = value;
-		});
-		return () => unsubscribe();
-	});
-
-	const user = $derived(auth.user);
+	import { authStatus, authUser } from '$lib/auth/sessionStore';
+	const status = $derived($authStatus);
+	const user = $derived($authUser);
 
 	$effect(() => {
-		if (auth.status === 'ready' && !user) {
+		if (status === 'ready' && !user) {
 			void goto(resolve('/login'));
 		}
 	});
