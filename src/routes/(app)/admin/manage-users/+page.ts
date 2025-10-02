@@ -1,13 +1,39 @@
+import { redirect } from '@sveltejs/kit';
+import { supabase } from '$lib/supabase';
+import { deriveUserRole, isPrivilegedRole } from '$lib/auth/roles';
 import type { PageLoad } from './$types';
 import type { ManageUsersPayload } from '$lib/types/admin';
 
-export const load: PageLoad = async ({ fetch }) => {
+const MANAGE_USERS_PATH = '/admin/manage-users';
+const GENERIC_ERROR_MESSAGE =
+	'Unable to load users from Supabase right now. Please try again later.';
+
+export const load: PageLoad = async ({ fetch, parent }) => {
+	const { session } = await parent();
+	const user = session?.user ?? null;
+	const role = deriveUserRole(user);
+
+	if (!isPrivilegedRole(role)) {
+		throw redirect(303, '/');
+	}
+
+	const { data } = await supabase.auth.getSession();
+	const accessToken = data.session?.access_token ?? null;
+
+	if (!accessToken) {
+		throw redirect(303, `/login?redirectTo=${encodeURIComponent(MANAGE_USERS_PATH)}`);
+	}
+
 	try {
-		const response = await fetch('/api/admin/users');
+		const response = await fetch('/api/admin/users', {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		});
 		if (!response.ok) {
 			return {
 				users: [],
-				error: 'Unable to load users from Supabase right now. Please try again later.'
+				error: GENERIC_ERROR_MESSAGE
 			} satisfies ManageUsersPayload;
 		}
 
@@ -17,7 +43,7 @@ export const load: PageLoad = async ({ fetch }) => {
 		console.error('Failed to fetch admin users', err);
 		return {
 			users: [],
-			error: 'Unable to load users from Supabase right now. Please try again later.'
+			error: GENERIC_ERROR_MESSAGE
 		} satisfies ManageUsersPayload;
 	}
 };

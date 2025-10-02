@@ -2,9 +2,16 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateManageableUser } from '$lib/server/adminUsers';
 import type { UpdateUserInput } from '$lib/types/admin';
+import { DEFAULT_ROLE } from '$lib/auth/roles';
+import { checkAdminRequest } from '$lib/server/requestAuth';
 
-export const PUT: RequestHandler = async ({ params, request }) => {
-	const id = params.id;
+export const PUT: RequestHandler = async (event) => {
+	const authResult = await checkAdminRequest(event);
+	if (!authResult.ok) {
+		return json({ error: authResult.message }, { status: authResult.status });
+	}
+
+	const id = event.params.id;
 
 	if (!id) {
 		return json({ error: 'User id is required.' }, { status: 400 });
@@ -13,7 +20,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	let payload: Partial<UpdateUserInput>;
 
 	try {
-		payload = (await request.json()) as Partial<UpdateUserInput>;
+		payload = (await event.request.json()) as Partial<UpdateUserInput>;
 	} catch {
 		return json({ error: 'Invalid JSON payload.' }, { status: 400 });
 	}
@@ -25,7 +32,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	const updateInput: UpdateUserInput = {
 		fullName: typeof payload.fullName === 'string' ? payload.fullName : '',
 		email: typeof payload.email === 'string' ? payload.email : '',
-		role: typeof payload.role === 'string' ? payload.role : 'Member',
+		role: typeof payload.role === 'string' ? payload.role : DEFAULT_ROLE,
 		status:
 			payload.status === 'Active' || payload.status === 'Invited' || payload.status === 'Suspended'
 				? payload.status

@@ -2,14 +2,16 @@
 	import { Sidebar, SidebarWrapper, SidebarGroup } from 'flowbite-svelte';
 	import { CloseOutline } from 'flowbite-svelte-icons';
 	import NavigationLink from './NavigationLink.svelte';
-	import { navItems } from './types.js';
+	import type { NavLink } from './types.js';
 
 	type Props = {
 		isOpen: boolean;
 		onClose: () => void;
+		items?: readonly NavLink[];
 	};
 
-	let { isOpen, onClose }: Props = $props();
+	let { isOpen, onClose, items }: Props = $props();
+	const resolvedItems = $derived(items ?? []);
 </script>
 
 <Sidebar
@@ -35,7 +37,7 @@
 		</div>
 
 		<SidebarGroup>
-			{#each navItems as item (item.path)}
+			{#each resolvedItems as item (item.path)}
 				<NavigationLink {item} onNavigate={onClose} />
 			{/each}
 		</SidebarGroup>

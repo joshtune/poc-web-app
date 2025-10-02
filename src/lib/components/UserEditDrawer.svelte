@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Alert, Button, Drawer, Input, Label, Select } from 'flowbite-svelte';
 	import { invalidate } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
 	type Props = {
@@ -101,10 +102,20 @@
 		formMessageTone = null;
 
 		try {
+			const { data: sessionData } = await supabase.auth.getSession();
+			const accessToken = sessionData.session?.access_token ?? null;
+
+			if (!accessToken) {
+				formMessageTone = 'error';
+				formMessage = 'Your session expired. Please sign in again.';
+				return;
+			}
+
 			const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
 				method: 'PUT',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${accessToken}`
 				},
 				body: JSON.stringify({
 					fullName: trimmedFullName,
@@ -129,12 +140,12 @@
 				return;
 			}
 
-			const data = (await response.json()) as { user?: ManageableUser };
-			if (data.user) {
-				formFullName = data.user.fullName ?? '';
-				formEmail = data.user.email;
-				formRole = data.user.role;
-				formStatus = data.user.status === 'Suspended' ? 'Suspended' : 'Active';
+			const responseData = (await response.json()) as { user?: ManageableUser };
+			if (responseData.user) {
+				formFullName = responseData.user.fullName ?? '';
+				formEmail = responseData.user.email;
+				formRole = responseData.user.role;
+				formStatus = responseData.user.status === 'Suspended' ? 'Suspended' : 'Active';
 			}
 
 			await invalidate('/api/admin/users');

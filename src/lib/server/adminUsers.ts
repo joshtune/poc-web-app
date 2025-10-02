@@ -1,4 +1,5 @@
 import type { User } from '@supabase/supabase-js';
+import { deriveUserRole, DEFAULT_ROLE } from '$lib/auth/roles';
 import { getSupabaseAdminClient } from './supabaseAdmin';
 import type {
 	ManageableUser,
@@ -7,8 +8,6 @@ import type {
 	UpdateUserResult,
 	UserStatus
 } from '$lib/types/admin';
-
-const DEFAULT_ROLE = 'Member';
 
 function toUserStatus(user: User): UserStatus {
 	const bannedUntil = getBannedUntil(user);
@@ -20,21 +19,6 @@ function toUserStatus(user: User): UserStatus {
 	}
 
 	return user.email_confirmed_at ? 'Active' : 'Invited';
-}
-
-function deriveRole(user: User): string {
-	const maybeRoleFields = [
-		user.user_metadata?.role,
-		user.user_metadata?.user_role,
-		user.app_metadata?.role,
-		user.app_metadata?.user_role
-	];
-
-	const resolved = maybeRoleFields.find(
-		(value): value is string => typeof value === 'string' && value.trim().length > 0
-	);
-
-	return resolved?.trim() ?? DEFAULT_ROLE;
 }
 
 function deriveFullName(user: User): string | null {
@@ -59,7 +43,7 @@ function transformUser(user: User): ManageableUser {
 		id: user.id,
 		email: user.email ?? 'unknown@example.com',
 		fullName: deriveFullName(user),
-		role: deriveRole(user),
+		role: deriveUserRole(user),
 		status: toUserStatus(user),
 		lastSignInAt: user.last_sign_in_at ?? null,
 		createdAt: user.created_at ?? null,
@@ -114,7 +98,7 @@ export async function updateManageableUser(
 
 	const fullName = input.fullName.trim();
 	const email = input.email.trim();
-	const role = input.role.trim() || 'Member';
+	const role = input.role.trim() || DEFAULT_ROLE;
 	const status = input.status;
 
 	if (!email) {
