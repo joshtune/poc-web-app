@@ -1,5 +1,5 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.png';
 	import { ThemeToggle } from '$lib';
 	import { resolve } from '$app/paths';
 
