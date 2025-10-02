@@ -1,19 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { onMount } from 'svelte';
-	import type { User } from '@supabase/supabase-js';
-	import { supabase } from '$lib/supabase';
+	import { authState, getAuthStateSnapshot } from '$lib/auth/sessionStore';
+	import type { AuthState } from '$lib/auth/sessionStore';
 
-	let user: User | null = null;
+	let auth = $state<AuthState>(getAuthStateSnapshot());
 
-	onMount(async () => {
-		const { data, error } = await supabase.auth.getUser();
+	$effect(() => {
+		const unsubscribe = authState.subscribe((value) => {
+			auth = value;
+		});
+		return () => unsubscribe();
+	});
 
-		user = data.user ?? null;
+	const user = $derived(auth.user);
 
-		if (!user && !error) {
-			await goto(resolve('/login'));
+	$effect(() => {
+		if (auth.status === 'ready' && !user) {
+			void goto(resolve('/login'));
 		}
 	});
 </script>

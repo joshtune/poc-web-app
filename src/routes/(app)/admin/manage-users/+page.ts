@@ -1,5 +1,4 @@
 import { redirect } from '@sveltejs/kit';
-import { supabase } from '$lib/supabase';
 import { deriveUserRole, isPrivilegedRole } from '$lib/auth/roles';
 import type { PageLoad } from './$types';
 import type { ManageUsersPayload } from '$lib/types/admin';
@@ -17,8 +16,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
 		throw redirect(303, '/');
 	}
 
-	const { data } = await supabase.auth.getSession();
-	const accessToken = data.session?.access_token ?? null;
+	const accessToken = session?.access_token ?? null;
 
 	if (!accessToken) {
 		throw redirect(303, `/login?redirectTo=${encodeURIComponent(MANAGE_USERS_PATH)}`);

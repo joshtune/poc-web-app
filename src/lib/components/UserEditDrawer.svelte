@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Alert, Button, Drawer, Input, Label, Select } from 'flowbite-svelte';
 	import { invalidate } from '$app/navigation';
-	import { supabase } from '$lib/supabase';
+	import { getAccessToken } from '$lib/auth/sessionStore';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
 	type Props = {
@@ -102,8 +102,7 @@
 		formMessageTone = null;
 
 		try {
-			const { data: sessionData } = await supabase.auth.getSession();
-			const accessToken = sessionData.session?.access_token ?? null;
+			const accessToken = await getAccessToken();
 
 			if (!accessToken) {
 				formMessageTone = 'error';

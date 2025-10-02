@@ -6,52 +6,29 @@
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { onMount } from 'svelte';
-	import type { User } from '@supabase/supabase-js';
+	import { authState, primeAuthState, getAuthStateSnapshot } from '$lib/auth/sessionStore';
+	import type { AuthState } from '$lib/auth/sessionStore';
 
 	let { children, data } = $props();
 
-	let user = $state<User | null>(data?.session?.user ?? null);
 	let isLoggingOut = $state(false);
-	let authSubscription: { unsubscribe: () => void } | null = null;
 	let isSidebarOpen = $state(false);
-	const userRole = $derived(deriveUserRole(user));
-	const sidebarItems = $derived(filterNavItemsByRole(userRole));
-
-	function updateUserState(sessionUser: User | null) {
-		user = sessionUser;
-	}
+	let auth = $state<AuthState>(getAuthStateSnapshot());
 
 	$effect(() => {
-		if (data?.session?.user) {
-			updateUserState(data.session.user);
-		}
+		primeAuthState(data?.session ?? null);
 	});
 
-	onMount(() => {
-		let mounted = true;
-
-		async function loadUser() {
-			const { data } = await supabase.auth.getUser();
-			if (!mounted) {
-				return;
-			}
-			updateUserState(data.user ?? null);
-		}
-
-		loadUser();
-
-		const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-			updateUserState(session?.user ?? null);
+	$effect(() => {
+		const unsubscribe = authState.subscribe((value) => {
+			auth = value;
 		});
-
-		authSubscription = listener?.subscription ?? null;
-
-		return () => {
-			mounted = false;
-			authSubscription?.unsubscribe();
-		};
+		return () => unsubscribe();
 	});
+
+	const user = $derived(auth.user);
+	const userRole = $derived(deriveUserRole(user));
+	const sidebarItems = $derived(filterNavItemsByRole(userRole));
 
 	function handleProfileClick() {
 		goto(resolve(user ? '/profile' : '/login'));
@@ -72,7 +49,6 @@
 				console.error('Logout error:', error);
 				return;
 			}
-			updateUserState(null);
 			await goto(resolve('/login'));
 		} finally {
 			isLoggingOut = false;
