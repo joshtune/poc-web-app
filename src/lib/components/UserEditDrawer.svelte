@@ -2,6 +2,7 @@
 	import { Alert, Button, Drawer, Input, Label, Select } from 'flowbite-svelte';
 	import { invalidate } from '$app/navigation';
 	import { getAccessToken } from '$lib/auth/sessionStore';
+	import { updateAdminUser } from '$lib/client/adminUsers';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
 	type Props = {
@@ -110,42 +111,29 @@
 				return;
 			}
 
-			const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${accessToken}`
-				},
-				body: JSON.stringify({
+			const payload = await updateAdminUser({
+				fetchImpl: fetch,
+				accessToken,
+				userId: selectedUser.id,
+				input: {
 					fullName: trimmedFullName,
 					email: trimmedEmail,
 					role: trimmedRole,
 					status: nextStatus
-				})
+				}
 			});
 
-			if (!response.ok) {
-				let message = 'Unable to update user right now. Please try again later.';
-				try {
-					const errorBody = (await response.json()) as { error?: string };
-					if (errorBody?.error) {
-						message = errorBody.error;
-					}
-				} catch (parseError) {
-					console.warn('Failed to parse error payload while updating user', parseError);
-				}
+			if (!payload.user) {
 				formMessageTone = 'error';
-				formMessage = message;
+				formMessage = payload.message ?? 'Unable to update user right now. Please try again later.';
 				return;
 			}
 
-			const responseData = (await response.json()) as { user?: ManageableUser };
-			if (responseData.user) {
-				formFullName = responseData.user.fullName ?? '';
-				formEmail = responseData.user.email;
-				formRole = responseData.user.role;
-				formStatus = responseData.user.status === 'Suspended' ? 'Suspended' : 'Active';
-			}
+			const updatedUser: ManageableUser = payload.user;
+			formFullName = updatedUser.fullName ?? '';
+			formEmail = updatedUser.email;
+			formRole = updatedUser.role;
+			formStatus = updatedUser.status === 'Suspended' ? 'Suspended' : 'Active';
 
 			await invalidate('/api/admin/users');
 			formMessageTone = 'success';
