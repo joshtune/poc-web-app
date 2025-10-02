@@ -3,20 +3,13 @@
 	import { invalidate } from '$app/navigation';
 	import { getAccessToken } from '$lib/auth/sessionStore';
 	import { updateAdminUser } from '$lib/client/adminUsers';
+	import { createManageUserForm, type DisplayUserSummary } from '$lib/components/useManageUserForm';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
 	type Props = {
 		isOpen: boolean;
 		selectedUser: ManageableUser | null;
-		selectedDisplayUser: {
-			id: string;
-			name: string;
-			email: string;
-			role: string;
-			status: UserStatus;
-			lastActive: string;
-			initials: string;
-		} | null;
+		selectedDisplayUser: DisplayUserSummary | null;
 		formRoleOptions: readonly string[];
 		onClose: () => void;
 	};
@@ -37,46 +30,90 @@
 	let formMessage = $state<string | null>(null);
 	let formMessageTone = $state<'success' | 'error' | 'info' | null>(null);
 
+	const formController = createManageUserForm(
+		{
+			getFullName: () => formFullName,
+			setFullName: (value) => {
+				formFullName = value;
+			},
+			getEmail: () => formEmail,
+			setEmail: (value) => {
+				formEmail = value;
+			},
+			getRole: () => formRole,
+			setRole: (value) => {
+				formRole = value;
+			},
+			getStatus: () => formStatus,
+			setStatus: (value) => {
+				formStatus = value;
+			},
+			setMessage: (tone, message) => {
+				formMessageTone = tone;
+				formMessage = message;
+			},
+			clearMessage: () => {
+				formMessageTone = null;
+				formMessage = null;
+			},
+			setSaving: (value) => {
+				isSaving = value;
+			}
+		},
+		{
+			submit: async ({ userId, fullName, email, role, status }) => {
+				const accessToken = await getAccessToken();
+
+				if (!accessToken) {
+					return {
+						success: false,
+						message: 'Your session expired. Please sign in again.'
+					};
+				}
+
+				const payload = await updateAdminUser({
+					fetchImpl: fetch,
+					accessToken,
+					userId,
+					input: {
+						fullName,
+						email,
+						role,
+						status
+					}
+				});
+
+				if (!payload.user) {
+					return {
+						success: false,
+						message: payload.message ?? 'Unable to update user right now. Please try again later.'
+					};
+				}
+
+				await invalidate('/api/admin/users');
+				return {
+					success: true,
+					user: payload.user
+				};
+			}
+		}
+	);
+
+	const { initialize, reset, submit } = formController;
+
 	$effect(() => {
 		if (!isOpen) {
-			resetForm();
+			reset();
 			return;
 		}
 
 		if (selectedUser) {
-			initializeForm();
+			initialize(selectedUser, selectedDisplayUser);
 			return;
 		}
 
-		resetForm();
+		reset();
 	});
-
-	function initializeForm() {
-		if (!selectedUser) return;
-
-		const fallbackName =
-			selectedUser.fullName && selectedUser.fullName.trim().length > 0
-				? selectedUser.fullName
-				: selectedDisplayUser?.name || '';
-
-		formFullName = fallbackName;
-		formEmail = selectedUser.email;
-		formRole = selectedUser.role;
-		formStatus = selectedUser.status === 'Suspended' ? 'Suspended' : 'Active';
-		formMessage = null;
-		formMessageTone = null;
-		isSaving = false;
-	}
-
-	function resetForm() {
-		formFullName = '';
-		formEmail = '';
-		formRole = 'Member';
-		formStatus = 'Active';
-		formMessage = null;
-		formMessageTone = null;
-		isSaving = false;
-	}
 
 	function closeDrawer() {
 		isOpen = false;
@@ -87,64 +124,9 @@
 		event.preventDefault();
 		if (!selectedUser) return;
 
-		const trimmedEmail = formEmail.trim();
-		const trimmedFullName = formFullName.trim();
-		const trimmedRole = formRole.trim() || 'Member';
-		const nextStatus: UserStatus = formStatus === 'Suspended' ? 'Suspended' : 'Active';
-
-		if (!trimmedEmail) {
-			formMessageTone = 'error';
-			formMessage = 'Email cannot be empty.';
-			return;
-		}
-
-		isSaving = true;
-		formMessage = null;
-		formMessageTone = null;
-
-		try {
-			const accessToken = await getAccessToken();
-
-			if (!accessToken) {
-				formMessageTone = 'error';
-				formMessage = 'Your session expired. Please sign in again.';
-				return;
-			}
-
-			const payload = await updateAdminUser({
-				fetchImpl: fetch,
-				accessToken,
-				userId: selectedUser.id,
-				input: {
-					fullName: trimmedFullName,
-					email: trimmedEmail,
-					role: trimmedRole,
-					status: nextStatus
-				}
-			});
-
-			if (!payload.user) {
-				formMessageTone = 'error';
-				formMessage = payload.message ?? 'Unable to update user right now. Please try again later.';
-				return;
-			}
-
-			const updatedUser: ManageableUser = payload.user;
-			formFullName = updatedUser.fullName ?? '';
-			formEmail = updatedUser.email;
-			formRole = updatedUser.role;
-			formStatus = updatedUser.status === 'Suspended' ? 'Suspended' : 'Active';
-
-			await invalidate('/api/admin/users');
-			formMessageTone = 'success';
-			formMessage = 'User updated successfully.';
+		const result = await submit(selectedUser);
+		if (result.success) {
 			setTimeout(closeDrawer, 800);
-		} catch (error) {
-			console.error('Failed to update user', error);
-			formMessageTone = 'error';
-			formMessage = 'Unable to update user right now. Please try again later.';
-		} finally {
-			isSaving = false;
 		}
 	}
 </script>
