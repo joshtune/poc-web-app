@@ -36,7 +36,6 @@
 			setFullName: (value) => {
 				formFullName = value;
 			},
-			getEmail: () => formEmail,
 			setEmail: (value) => {
 				formEmail = value;
 			},
@@ -61,7 +60,7 @@
 			}
 		},
 		{
-			submit: async ({ userId, fullName, email, role, status }) => {
+			submit: async ({ userId, fullName, role, status }) => {
 				const accessToken = await getAccessToken();
 
 				if (!accessToken) {
@@ -77,7 +76,6 @@
 					userId,
 					input: {
 						fullName,
-						email,
 						role,
 						status
 					}
@@ -187,7 +185,22 @@
 			</div>
 
 			<div class="space-y-2">
-				<Label for="edit-email">Email</Label>
+				<div class="flex items-center justify-between">
+					<div class="flex items-center gap-2">
+						<Label for="edit-email">Email</Label>
+						<svg
+							class="h-4 w-4 text-gray-400"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+						>
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+							<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+						</svg>
+					</div>
+					<span class="text-xs text-gray-500 dark:text-gray-400">Contact support to change</span>
+				</div>
 				<Input
 					id="edit-email"
 					name="email"
@@ -195,6 +208,8 @@
 					placeholder="Email address"
 					autocomplete="email"
 					bind:value={formEmail}
+					readonly
+					class="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
 				/>
 			</div>
 

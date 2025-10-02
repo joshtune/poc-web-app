@@ -5,7 +5,6 @@ type MessageTone = 'success' | 'error' | 'info' | null;
 export type ManageUserFormSubmitPayload = {
 	userId: string;
 	fullName: string;
-	email: string;
 	role: string;
 	status: UserStatus;
 };
@@ -29,7 +28,6 @@ export type DisplayUserSummary = {
 type FormBindings = {
 	getFullName(): string;
 	setFullName(value: string): void;
-	getEmail(): string;
 	setEmail(value: string): void;
 	getRole(): string;
 	setRole(value: string): void;
@@ -66,11 +64,11 @@ export function createManageUserForm(bindings: FormBindings, options: FormOption
 
 	function reset() {
 		bindings.setFullName('');
-		bindings.setEmail('');
 		bindings.setRole('Member');
 		bindings.setStatus('Active');
 		bindings.clearMessage();
 		bindings.setSaving(false);
+		bindings.setEmail('');
 	}
 
 	async function submit(selectedUser: ManageableUser | null): Promise<ManageUserFormSubmitResult> {
@@ -78,15 +76,9 @@ export function createManageUserForm(bindings: FormBindings, options: FormOption
 			return { success: false, message: 'No user selected.' };
 		}
 
-		const trimmedEmail = bindings.getEmail().trim();
 		const trimmedFullName = bindings.getFullName().trim();
 		const trimmedRole = bindings.getRole().trim() || 'Member';
 		const nextStatus: UserStatus = bindings.getStatus() === 'Suspended' ? 'Suspended' : 'Active';
-
-		if (!trimmedEmail) {
-			bindings.setMessage('error', 'Email cannot be empty.');
-			return { success: false, message: 'Email cannot be empty.' };
-		}
 
 		bindings.setSaving(true);
 		bindings.clearMessage();
@@ -95,7 +87,6 @@ export function createManageUserForm(bindings: FormBindings, options: FormOption
 			const result = await options.submit({
 				userId: selectedUser.id,
 				fullName: trimmedFullName,
-				email: trimmedEmail,
 				role: trimmedRole,
 				status: nextStatus
 			});

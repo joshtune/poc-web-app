@@ -97,25 +97,14 @@ export async function updateManageableUser(
 	}
 
 	const fullName = input.fullName.trim();
-	const email = input.email.trim();
 	const role = input.role.trim() || DEFAULT_ROLE;
 	const status = input.status;
 
-	if (!email) {
-		return {
-			user: null,
-			message: 'Email is required to update a user.',
-			status: 400
-		};
-	}
-
 	const attributes: {
-		email?: string;
 		user_metadata?: Record<string, unknown>;
 		app_metadata?: Record<string, unknown>;
 		ban_duration?: string;
 	} = {
-		email,
 		user_metadata: {
 			full_name: fullName,
 			name: fullName

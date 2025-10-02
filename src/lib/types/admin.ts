@@ -18,7 +18,6 @@ export type ManageUsersPayload = {
 
 export type UpdateUserInput = {
 	fullName: string;
-	email: string;
 	role: string;
 	status: UserStatus;
 };

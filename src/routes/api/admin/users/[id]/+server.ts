@@ -17,7 +17,7 @@ export const PUT: RequestHandler = async (event) => {
 		return json({ error: 'User id is required.' }, { status: 400 });
 	}
 
-	let payload: Partial<UpdateUserInput>;
+	let payload: Record<string, unknown>;
 
 	try {
 		payload = (await event.request.json()) as Partial<UpdateUserInput>;
@@ -29,9 +29,13 @@ export const PUT: RequestHandler = async (event) => {
 		return json({ error: 'Missing request payload.' }, { status: 400 });
 	}
 
+	const emailCandidate = typeof payload.email === 'string' ? payload.email : '';
+	if (emailCandidate.trim().length > 0) {
+		return json({ error: 'Email address cannot be modified.' }, { status: 400 });
+	}
+
 	const updateInput: UpdateUserInput = {
 		fullName: typeof payload.fullName === 'string' ? payload.fullName : '',
-		email: typeof payload.email === 'string' ? payload.email : '',
 		role: typeof payload.role === 'string' ? payload.role : DEFAULT_ROLE,
 		status:
 			payload.status === 'Active' || payload.status === 'Invited' || payload.status === 'Suspended'
