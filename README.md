@@ -131,6 +131,8 @@ Make sure to set these environment variables:
 - `VITE_PUBLIC_SUPABASE_URL`: Your Supabase project URL
 - `VITE_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY`: Required for admin-only features such as listing all users (keep this private; never expose it to the client)
+- `VITE_PUBLIC_AUTH_GOOGLE_ENABLED`: Optional; set to `false` to hide Google OAuth login (defaults to `true`)
+- `VITE_PUBLIC_AUTH_FACEBOOK_ENABLED`: Optional; set to `false` to hide Facebook OAuth login (defaults to `true`)
 
 ## Troubleshooting
 
