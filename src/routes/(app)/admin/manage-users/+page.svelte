@@ -232,13 +232,7 @@
 </script>
 
 <div class="space-y-10 px-4 py-10 sm:px-8 xl:px-12">
-	<PageHeader
-		breadcrumb="Admin · Manage users"
-		title="User directory"
-		description="Keep your workspace organized by reviewing roles, invitations, and recent activity. Filter and find teammates quickly across every device size."
-		actionText="Invite member"
-		onAction={() => console.log('Invite member clicked')}
-	/>
+	<PageHeader breadcrumb="Admin · Manage users" title="User directory" />
 
 	{#if serverError}
 		<Alert

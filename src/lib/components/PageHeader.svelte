@@ -1,18 +1,10 @@
 <script lang="ts">
-	import { Button } from 'flowbite-svelte';
-
 	let {
 		breadcrumb,
-		title,
-		description,
-		actionText,
-		onAction
+		title
 	}: {
 		breadcrumb?: string;
 		title: string;
-		description?: string;
-		actionText?: string;
-		onAction?: () => void;
 	} = $props();
 </script>
 
@@ -22,13 +14,9 @@
 			<p class="text-sm font-medium text-primary-600">{breadcrumb}</p>
 		{/if}
 		<h1 class="text-3xl font-semibold text-gray-900 dark:text-white">{title}</h1>
-		{#if description}
-			<p class="max-w-2xl text-sm text-gray-500 dark:text-gray-300">{description}</p>
-		{/if}
+		<p class="max-w-2xl text-sm text-gray-500 dark:text-gray-300">
+			Keep your workspace organized by reviewing roles, invitations, and recent activity. Filter and
+			find teammates quickly across every device size.
+		</p>
 	</div>
-	{#if actionText && onAction}
-		<Button color="primary" class="h-10 whitespace-nowrap" onclick={onAction}>
-			{actionText}
-		</Button>
-	{/if}
 </section>
