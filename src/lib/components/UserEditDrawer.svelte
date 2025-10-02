@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Alert, Button, Drawer, Input, Label, Select } from 'flowbite-svelte';
+	import { Alert, Button, Drawer, Input, Label, Select, Modal } from 'flowbite-svelte';
 	import { invalidate } from '$app/navigation';
 	import { getAccessToken } from '$lib/auth/sessionStore';
 	import { updateAdminUser } from '$lib/client/adminUsers';
@@ -29,6 +29,8 @@
 	let isSaving = $state(false);
 	let formMessage = $state<string | null>(null);
 	let formMessageTone = $state<'success' | 'error' | 'info' | null>(null);
+	let initialStatus = $state<UserStatus>('Active');
+	let isSuspendConfirmOpen = $state(false);
 
 	const formController = createManageUserForm(
 		{
@@ -102,15 +104,18 @@
 	$effect(() => {
 		if (!isOpen) {
 			reset();
+			initialStatus = 'Active';
 			return;
 		}
 
 		if (selectedUser) {
 			initialize(selectedUser, selectedDisplayUser);
+			initialStatus = selectedUser.status === 'Suspended' ? 'Suspended' : selectedUser.status;
 			return;
 		}
 
 		reset();
+		initialStatus = 'Active';
 	});
 
 	function closeDrawer() {
@@ -118,14 +123,40 @@
 		onClose();
 	}
 
-	async function handleFormSubmit(event: SubmitEvent) {
-		event.preventDefault();
-		if (!selectedUser) return;
+	function shouldConfirmSuspension(): boolean {
+		return initialStatus !== 'Suspended' && formStatus === 'Suspended';
+	}
+
+	async function runSubmit() {
+		if (!selectedUser) {
+			return;
+		}
 
 		const result = await submit(selectedUser);
 		if (result.success) {
 			setTimeout(closeDrawer, 800);
 		}
+	}
+
+	async function handleFormSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		if (!selectedUser) return;
+
+		if (shouldConfirmSuspension()) {
+			isSuspendConfirmOpen = true;
+			return;
+		}
+
+		await runSubmit();
+	}
+
+	async function confirmSuspend() {
+		isSuspendConfirmOpen = false;
+		await runSubmit();
+	}
+
+	function cancelSuspend() {
+		isSuspendConfirmOpen = false;
 	}
 </script>
 
@@ -254,3 +285,28 @@
 		</form>
 	</div>
 </Drawer>
+
+<Modal bind:open={isSuspendConfirmOpen} size="md" autoclose={false}>
+	<div class="space-y-4 p-6">
+		<div class="flex items-center gap-3">
+			<svg class="h-6 w-6 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01" />
+				<path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86 1.82 18A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.71-3L12.71 3.86a2 2 0 0 0-3.42 0Z" />
+			</svg>
+			<div>
+				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Suspend this user?</h3>
+				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+					Suspending {selectedDisplayUser?.name ?? selectedUser?.email ?? 'this user'} blocks their access until you reactivate them.
+				</p>
+			</div>
+		</div>
+		<div class="flex justify-end gap-3">
+			<Button color="light" onclick={cancelSuspend}>
+				Cancel
+			</Button>
+			<Button color="red" onclick={confirmSuspend}>
+				Suspend user
+			</Button>
+		</div>
+	</div>
+</Modal>
