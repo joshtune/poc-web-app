@@ -277,17 +277,18 @@
 			<div class="flex flex-col gap-3 pt-2">
 				<div class="space-y-2">
 					<Label for="edit-status">Status</Label>
-					<Select id="edit-status" bind:value={formStatus}>
+					<Select id="edit-status" disabled={isEditingSelf} bind:value={formStatus}>
 						<option value="Active">Active</option>
 						<option value="Suspended" disabled={isEditingSelf}>Suspended</option>
 					</Select>
 					<p class="text-xs text-gray-500 dark:text-gray-400">
 						{#if isEditingSelf}
-							<span class="block text-amber-600 dark:text-amber-400"
-								>You can’t suspend your own account.</span
-							>
+							<span class="block text-amber-600 dark:text-amber-400">
+								You can’t suspend your own account.
+							</span>
+						{:else}
+							Suspended users cannot sign in until you mark them Active again.
 						{/if}
-						Suspended users cannot sign in until you mark them Active again.
 					</p>
 				</div>
 			</div>
