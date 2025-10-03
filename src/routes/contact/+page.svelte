@@ -18,14 +18,18 @@
 		</header>
 
 		<section class="grid gap-6 md:grid-cols-2">
-			<article class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+			<article
+				class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
+			>
 				<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Talk with the team</h2>
 				<p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
 					A real person will read and reply to your note—usually faster than you’d expect.
 				</p>
 				<ul class="mt-5 space-y-3 text-sm text-gray-600 dark:text-gray-300">
 					<li class="flex flex-col gap-1">
-						<span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+						<span
+							class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+						>
 							Email
 						</span>
 						<a
@@ -37,7 +41,9 @@
 						<span class="text-xs text-gray-500 dark:text-gray-400">Avg. reply: under 2 hours</span>
 					</li>
 					<li class="flex flex-col gap-1">
-						<span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+						<span
+							class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+						>
 							Phone
 						</span>
 						<a
@@ -51,7 +57,9 @@
 				</ul>
 			</article>
 
-			<article class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+			<article
+				class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
+			>
 				<h2 class="text-lg font-semibold text-gray-900 dark:text-white">How we support you</h2>
 				<p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
 					We keep a close eye on priority requests and flag anything urgent for immediate action.
@@ -67,7 +75,9 @@
 			</article>
 		</section>
 
-		<section class="rounded-2xl border border-dashed border-primary-200 bg-primary-50/60 px-6 py-5 text-sm text-primary-700 shadow-sm dark:border-primary-400/40 dark:bg-primary-500/10 dark:text-primary-300">
+		<section
+			class="rounded-2xl border border-dashed border-primary-200 bg-primary-50/60 px-6 py-5 text-sm text-primary-700 shadow-sm dark:border-primary-400/40 dark:bg-primary-500/10 dark:text-primary-300"
+		>
 			<p>
 				Thank you for trusting us with your work. Even if you just want to say hello, we’d love to
 				hear from you.
