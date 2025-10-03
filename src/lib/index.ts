@@ -7,3 +7,4 @@ export { default as SearchAndFilter } from './components/SearchAndFilter.svelte'
 export { default as UserAvatar } from './components/UserAvatar.svelte';
 export { default as UsersTable } from './components/UsersTable.svelte';
 export { default as DataTable } from './components/DataTable.svelte';
+export { default as StandalonePageLayout } from './components/StandalonePageLayout.svelte';
