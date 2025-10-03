@@ -4,10 +4,9 @@
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	export let brandLabel = 'Auth App';
-	export let homePath = '/';
 	export let contentClass = 'min-h-screen bg-transparent';
 
-	const homeHref = resolve(homePath);
+	const homeHref = resolve('/');
 </script>
 
 <div
