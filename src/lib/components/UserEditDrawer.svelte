@@ -4,6 +4,7 @@
 	import { getAccessToken, authUser } from '$lib/auth/sessionStore';
 	import { updateAdminUser } from '$lib/client/adminUsers';
 	import { createManageUserForm, type DisplayUserSummary } from '$lib/components/useManageUserForm';
+	import { DEFAULT_ROLE } from '$lib/auth/roles';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
 
 	type Props = {
@@ -24,7 +25,7 @@
 
 	let formFullName = $state('');
 	let formEmail = $state('');
-	let formRole = $state('Member');
+	let formRole = $state(DEFAULT_ROLE);
 	let formStatus = $state<UserStatus>('Active');
 	let isSaving = $state(false);
 	let formMessage = $state<string | null>(null);
@@ -265,7 +266,7 @@
 				<Label for="edit-role">Role</Label>
 				<Select id="edit-role" bind:value={formRole}>
 					{#if formRoleOptions.length === 0}
-						<option value={formRole}>{formRole || 'Member'}</option>
+						<option value={formRole}>{formRole || DEFAULT_ROLE}</option>
 					{:else}
 						{#each formRoleOptions as option (option)}
 							<option value={option}>{option}</option>

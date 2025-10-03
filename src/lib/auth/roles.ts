@@ -1,6 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 
-export const DEFAULT_ROLE = 'Member';
+export const DEFAULT_ROLE = 'Basic';
 
 const ROLE_FIELD_CANDIDATES = ['role', 'user_role'] as const;
 type RoleField = (typeof ROLE_FIELD_CANDIDATES)[number];

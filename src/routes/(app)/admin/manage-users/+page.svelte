@@ -20,7 +20,7 @@
 		initials: string;
 	};
 
-	const defaultRoleOptions = ['Owner', 'Admin', 'Member'];
+	const defaultRoleOptions = ['Owner', 'Admin', 'Basic'];
 
 	export let data: PageData;
 

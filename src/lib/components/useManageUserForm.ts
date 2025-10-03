@@ -1,4 +1,5 @@
 import type { ManageableUser, UserStatus } from '$lib/types/admin';
+import { DEFAULT_ROLE } from '$lib/auth/roles';
 
 type MessageTone = 'success' | 'error' | 'info' | null;
 
@@ -64,7 +65,7 @@ export function createManageUserForm(bindings: FormBindings, options: FormOption
 
 	function reset() {
 		bindings.setFullName('');
-		bindings.setRole('Member');
+		bindings.setRole(DEFAULT_ROLE);
 		bindings.setStatus('Active');
 		bindings.clearMessage();
 		bindings.setSaving(false);
@@ -77,7 +78,7 @@ export function createManageUserForm(bindings: FormBindings, options: FormOption
 		}
 
 		const trimmedFullName = bindings.getFullName().trim();
-		const trimmedRole = bindings.getRole().trim() || 'Member';
+		const trimmedRole = bindings.getRole().trim() || DEFAULT_ROLE;
 		const nextStatus: UserStatus = bindings.getStatus() === 'Suspended' ? 'Suspended' : 'Active';
 
 		bindings.setSaving(true);
