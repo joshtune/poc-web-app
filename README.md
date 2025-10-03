@@ -39,7 +39,7 @@ pnpm install
 2. **Copy the local credentials** from the terminal output and create a `.env` file:
 
 ```env
-VITE_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+VITE_PUBLIC_SUPABASE_URL=http://localhost:54321
 VITE_PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key_from_terminal
 SUPABASE_SERVICE_ROLE_KEY=your_local_service_role_key_from_terminal
 ```
@@ -117,6 +117,20 @@ pnpm build
 
 You can preview the production build with `pnpm preview`.
 
+## End-to-End Tests
+
+Playwright drives the UI in a headless Chromium instance to exercise key authentication flows.
+
+```sh
+# Install the browsers Playwright needs (one-time setup)
+pnpm exec playwright install
+
+# Run the full E2E suite (spins up the dev server automatically)
+pnpm run test:e2e
+```
+
+By default the suite serves the app on `http://localhost:4173` and uses mock Supabase credentials. Provide `VITE_PUBLIC_SUPABASE_URL` and `VITE_PUBLIC_SUPABASE_ANON_KEY` before running the tests if you would like to point at a real Supabase project.
+
 ## Tech Stack
 
 - **Frontend**: SvelteKit, TypeScript, Tailwind CSS
@@ -162,8 +176,8 @@ If you encounter Docker-related errors:
 When running Supabase locally, you can access:
 
 - **Supabase Studio**: `http://localhost:54323`
-- **API**: `http://127.0.0.1:54321`
-- **Database**: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
+- **API**: `http://localhost:54321`
+- **Database**: `postgresql://postgres:postgres@localhost:54322/postgres`
 - **Inbucket (Email testing)**: `http://localhost:54324`
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.

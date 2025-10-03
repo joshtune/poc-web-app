@@ -128,13 +128,13 @@
 		<div class="flex justify-center">
 			<Card class="p-6 w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
 				{#if errorMessage}
-					<Alert color="red" class="mb-4">
+					<Alert color="red" class="mb-4" data-testid="register-error">
 						{errorMessage}
 					</Alert>
 				{/if}
 
 				{#if successMessage}
-					<Alert color="green" class="mb-4">
+					<Alert color="green" class="mb-4" data-testid="register-success">
 						{successMessage}
 					</Alert>
 				{/if}
