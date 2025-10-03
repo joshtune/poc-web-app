@@ -27,7 +27,7 @@
 </script>
 
 <Navbar
-	class="relative z-30 bg-white shadow-sm dark:bg-gray-800 dark:border-b dark:border-gray-700"
+	class="relative z-50 bg-white shadow-sm dark:bg-gray-800 dark:border-b dark:border-gray-700"
 	fluid
 >
 	<div class="flex items-center gap-3">
