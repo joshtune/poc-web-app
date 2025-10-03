@@ -34,12 +34,12 @@ function parseBooleanEnv(rawValue: string | undefined, fallback: boolean, flagNa
 export const AUTH_PROVIDER_CONFIG = {
 	google: parseBooleanEnv(
 		import.meta.env.VITE_PUBLIC_AUTH_GOOGLE_ENABLED,
-		true,
+		false,
 		'VITE_PUBLIC_AUTH_GOOGLE_ENABLED'
 	),
 	facebook: parseBooleanEnv(
 		import.meta.env.VITE_PUBLIC_AUTH_FACEBOOK_ENABLED,
-		true,
+		false,
 		'VITE_PUBLIC_AUTH_FACEBOOK_ENABLED'
 	)
 };
