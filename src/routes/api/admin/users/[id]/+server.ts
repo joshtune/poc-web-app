@@ -43,6 +43,10 @@ export const PUT: RequestHandler = async (event) => {
 				: 'Active'
 	};
 
+	if (authResult.user.id === id && updateInput.status === 'Suspended') {
+		return json({ error: 'You cannot suspend your own account.' }, { status: 400 });
+	}
+
 	const result = await updateManageableUser(id, updateInput);
 
 	if (!result.user || result.message) {

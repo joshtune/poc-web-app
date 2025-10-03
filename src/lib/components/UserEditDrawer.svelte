@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Alert, Button, Drawer, Input, Label, Select, Modal } from 'flowbite-svelte';
 	import { invalidate } from '$app/navigation';
-	import { getAccessToken } from '$lib/auth/sessionStore';
+	import { getAccessToken, authUser } from '$lib/auth/sessionStore';
 	import { updateAdminUser } from '$lib/client/adminUsers';
 	import { createManageUserForm, type DisplayUserSummary } from '$lib/components/useManageUserForm';
 	import type { ManageableUser, UserStatus } from '$lib/types/admin';
@@ -31,6 +31,10 @@
 	let formMessageTone = $state<'success' | 'error' | 'info' | null>(null);
 	let initialStatus = $state<UserStatus>('Active');
 	let isSuspendConfirmOpen = $state(false);
+	const currentUser = $derived($authUser);
+	const isEditingSelf = $derived(
+		selectedUser?.id && currentUser?.id ? selectedUser.id === currentUser.id : false
+	);
 
 	const formController = createManageUserForm(
 		{
@@ -124,11 +128,25 @@
 	}
 
 	function shouldConfirmSuspension(): boolean {
+		if (isEditingSelf && formStatus === 'Suspended') {
+			formMessageTone = 'error';
+			formMessage = 'You cannot suspend your own account.';
+			formStatus = initialStatus;
+			return false;
+		}
+
 		return initialStatus !== 'Suspended' && formStatus === 'Suspended';
 	}
 
 	async function runSubmit() {
 		if (!selectedUser) {
+			return;
+		}
+
+		if (isEditingSelf && formStatus === 'Suspended') {
+			formMessageTone = 'error';
+			formMessage = 'You cannot suspend your own account.';
+			formStatus = initialStatus;
 			return;
 		}
 
@@ -222,7 +240,6 @@
 						<svg
 							class="h-4 w-4 text-gray-400"
 							viewBox="0 0 24 24"
-							fill="none"
 							stroke="currentColor"
 							stroke-width="1.5"
 						>
@@ -262,9 +279,14 @@
 					<Label for="edit-status">Status</Label>
 					<Select id="edit-status" bind:value={formStatus}>
 						<option value="Active">Active</option>
-						<option value="Suspended">Suspended</option>
+						<option value="Suspended" disabled={isEditingSelf}>Suspended</option>
 					</Select>
 					<p class="text-xs text-gray-500 dark:text-gray-400">
+						{#if isEditingSelf}
+							<span class="block text-amber-600 dark:text-amber-400"
+								>You can’t suspend your own account.</span
+							>
+						{/if}
 						Suspended users cannot sign in until you mark them Active again.
 					</p>
 				</div>
@@ -289,24 +311,30 @@
 <Modal bind:open={isSuspendConfirmOpen} size="md" autoclose={false}>
 	<div class="space-y-4 p-6">
 		<div class="flex items-center gap-3">
-			<svg class="h-6 w-6 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+			<svg
+				class="h-6 w-6 text-amber-500"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+				stroke-width="1.5"
+			>
 				<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01" />
-				<path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86 1.82 18A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.71-3L12.71 3.86a2 2 0 0 0-3.42 0Z" />
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					d="M10.29 3.86 1.82 18A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.71-3L12.71 3.86a2 2 0 0 0-3.42 0Z"
+				/>
 			</svg>
 			<div>
 				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Suspend this user?</h3>
 				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-					Suspending {selectedDisplayUser?.name ?? selectedUser?.email ?? 'this user'} blocks their access until you reactivate them.
+					Suspending {selectedDisplayUser?.name ?? selectedUser?.email ?? 'this user'} blocks their access
+					until you reactivate them.
 				</p>
 			</div>
 		</div>
 		<div class="flex justify-end gap-3">
-			<Button color="light" onclick={cancelSuspend}>
-				Cancel
-			</Button>
-			<Button color="red" onclick={confirmSuspend}>
-				Suspend user
-			</Button>
+			<Button color="light" onclick={cancelSuspend}>Cancel</Button>
+			<Button color="red" onclick={confirmSuspend}>Suspend user</Button>
 		</div>
 	</div>
 </Modal>
