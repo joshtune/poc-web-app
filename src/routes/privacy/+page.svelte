@@ -52,8 +52,8 @@
 				<h2 class="text-xl font-semibold text-gray-900 dark:text-white">4. Your choices</h2>
 				<p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
 					You can manage email preferences, request deletion of your account, or disable analytics
-					tracking from your profile. For EU/EEA residents, we act as a data processor and honor GDPR
-					requests within 30 days.
+					tracking from your profile. For EU/EEA residents, we act as a data processor and honor
+					GDPR requests within 30 days.
 				</p>
 			</article>
 
@@ -67,7 +67,9 @@
 			</article>
 		</section>
 
-		<footer class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+		<footer
+			class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
+		>
 			<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Need to talk to us?</h2>
 			<p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
 				Contact our privacy team at

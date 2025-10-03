@@ -15,7 +15,7 @@
 </script>
 
 <Sidebar
-	class={`fixed inset-y-0 left-0 z-30 w-64 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+	class={`bg-gray-50 border-r border-gray-200 dark:border-gray-700 dark:bg-gray-800 fixed inset-y-0 left-0 z-30 w-64 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
 		isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
 	}`}
 	aria-label="Main navigation"

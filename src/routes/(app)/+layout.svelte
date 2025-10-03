@@ -55,7 +55,9 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+<div
+	class="min-h-screen flex flex-col bg-gradient-to-br from-white via-gray-50 to-gray-200 dark:from-gray-950 dark:via-gray-900 dark:to-gray-900"
+>
 	<AppNavbar
 		{user}
 		{isLoggingOut}
@@ -74,7 +76,14 @@
 	{/if}
 
 	<div class="relative flex flex-1 overflow-hidden">
-		<Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} items={sidebarItems} />
+		<div class="relative flex-shrink-0 w-0 lg:w-64">
+			<div class="absolute inset-0 hidden lg:block" aria-hidden="true"></div>
+			<div
+				class="relative z-10 h-full bg-gray-50 border-r border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+			>
+				<Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} items={sidebarItems} />
+			</div>
+		</div>
 
 		<main class="flex-1 overflow-y-auto">
 			<div class="min-h-full">

@@ -83,7 +83,9 @@
 			</form>
 
 			<div class="space-y-8">
-				<section class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+				<section
+					class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
+				>
 					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Direct contacts</h2>
 					<ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-300">
 						{#each contacts as entry (entry.value)}
@@ -100,7 +102,9 @@
 					</ul>
 				</section>
 
-				<section class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+				<section
+					class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
+				>
 					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Offices</h2>
 					<ul class="mt-4 space-y-4 text-sm text-gray-600 dark:text-gray-300">
 						{#each offices as office (office.name)}

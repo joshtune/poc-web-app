@@ -37,7 +37,9 @@
 			</article>
 
 			<article class="space-y-3">
-				<h2 class="text-xl font-semibold text-gray-900 dark:text-white">3. Billing & subscriptions</h2>
+				<h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+					3. Billing & subscriptions
+				</h2>
 				<p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
 					Paid plans renew automatically unless cancelled before the end of the billing cycle. Fees
 					are non-refundable except where required by law. Upgrading or downgrading your plan may
@@ -46,7 +48,9 @@
 			</article>
 
 			<article class="space-y-3">
-				<h2 class="text-xl font-semibold text-gray-900 dark:text-white">4. Intellectual property</h2>
+				<h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+					4. Intellectual property
+				</h2>
 				<p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
 					We own the platform, codebase, and documentation. You retain all rights to your content.
 					By uploading content, you grant us a limited license to host and transmit it for the
@@ -64,7 +68,9 @@
 			</article>
 		</section>
 
-		<footer class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+		<footer
+			class="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
+		>
 			<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Questions?</h2>
 			<p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
 				Reach out to
