@@ -3,8 +3,8 @@
 	import {
 		ArrowLeftToBracketOutline,
 		ArrowRightToBracketOutline,
-		UserCircleOutline,
-		BarsOutline
+	UserCircleOutline,
+	BarsOutline
 	} from 'flowbite-svelte-icons';
 	import favicon from '$lib/assets/favicon.png';
 	import { ThemeToggle } from '$lib';
@@ -24,6 +24,46 @@
 		$props();
 
 	const isLoggedIn = $derived(Boolean(user));
+
+	let menuTrigger = $state<HTMLButtonElement | null>(null);
+	let menuContent = $state<HTMLDivElement | null>(null);
+	let isMenuOpen = $state(false);
+
+	function toggleMenu() {
+		isMenuOpen = !isMenuOpen;
+	}
+
+	function closeMenu() {
+		isMenuOpen = false;
+	}
+
+	$effect(() => {
+		if (!isMenuOpen) {
+			return;
+		}
+
+		function handleClick(event: MouseEvent) {
+			const target = event.target as Node;
+			if (menuContent?.contains(target) || menuTrigger?.contains(target)) {
+				return;
+			}
+			closeMenu();
+		}
+
+		function handleKey(event: KeyboardEvent) {
+			if (event.key === 'Escape') {
+				closeMenu();
+			}
+		}
+
+		window.addEventListener('click', handleClick);
+		window.addEventListener('keydown', handleKey);
+
+		return () => {
+			window.removeEventListener('click', handleClick);
+			window.removeEventListener('keydown', handleKey);
+		};
+	});
 </script>
 
 <Navbar
@@ -49,41 +89,81 @@
 		</NavBrand>
 	</div>
 
-	<div class="flex items-center gap-2">
-		<ThemeToggle />
+	<div class="relative flex items-center">
 		<button
 			type="button"
-			class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400"
-			aria-label={user ? 'Go to profile' : 'Sign in'}
-			onclick={onProfileClick}
+			bind:this={menuTrigger}
+			class={`rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+				isMenuOpen
+					? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
+					: 'text-gray-600 hover:bg-gray-100 hover:text-primary-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400'
+			}`}
+			aria-haspopup="true"
+			aria-expanded={isMenuOpen}
+			onclick={toggleMenu}
 		>
 			<UserCircleOutline class="h-6 w-6" />
 		</button>
-		{#if !isLoggedIn}
-			<button
-				type="button"
-				class="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400"
-				aria-label="Go to login"
-				onclick={onLoginClick}
+
+		{#if isMenuOpen}
+			<div
+				bind:this={menuContent}
+				class="absolute right-0 top-12 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
 			>
-				<ArrowRightToBracketOutline class="h-6 w-6" />
-			</button>
-		{/if}
-		{#if isLoggedIn}
-			<button
-				type="button"
-				class={`rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-					isLoggingOut
-						? 'cursor-not-allowed text-gray-400 dark:text-gray-500'
-						: 'text-gray-600 hover:bg-gray-100 hover:text-primary-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-primary-400'
-				}`}
-				aria-label="Sign out"
-				onclick={onLogoutClick}
-				disabled={isLoggingOut}
-				aria-disabled={isLoggingOut}
-			>
-				<ArrowLeftToBracketOutline class="h-6 w-6" />
-			</button>
+				<div class="border-b border-gray-100 p-4 dark:border-gray-700">
+					<div class="flex items-center justify-between">
+						<span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+							Display
+						</span>
+						<ThemeToggle />
+					</div>
+				</div>
+				<div class="flex flex-col gap-1 p-2">
+					{#if isLoggedIn}
+						<button
+							type="button"
+							class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-primary-400"
+							onclick={() => {
+								closeMenu();
+								onProfileClick();
+							}}
+						>
+							<UserCircleOutline class="h-5 w-5" />
+							Profile
+						</button>
+						<button
+							type="button"
+							class={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+								isLoggingOut
+									? 'cursor-not-allowed text-gray-400 dark:text-gray-500'
+									: 'text-gray-700 hover:bg-gray-100 hover:text-primary-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-primary-400'
+							}`}
+							onclick={() => {
+								if (isLoggingOut) return;
+								closeMenu();
+								onLogoutClick();
+							}}
+							disabled={isLoggingOut}
+							aria-disabled={isLoggingOut}
+						>
+							<ArrowLeftToBracketOutline class="h-5 w-5" />
+							Sign out
+						</button>
+					{:else}
+						<button
+							type="button"
+							class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-primary-400"
+							onclick={() => {
+								closeMenu();
+								onLoginClick();
+							}}
+						>
+							<ArrowRightToBracketOutline class="h-5 w-5" />
+							Sign in
+						</button>
+					{/if}
+				</div>
+			</div>
 		{/if}
 	</div>
 </Navbar>
