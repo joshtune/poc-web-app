@@ -21,10 +21,8 @@ export default defineConfig({
 		timeout: 2 * 60 * 1000,
 		reuseExistingServer: !process.env.CI,
 		env: {
-			VITE_PUBLIC_SUPABASE_URL:
-				process.env.VITE_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:54321',
-			VITE_PUBLIC_SUPABASE_ANON_KEY:
-				process.env.VITE_PUBLIC_SUPABASE_ANON_KEY ?? 'test-anon-key'
+			VITE_PUBLIC_SUPABASE_URL: process.env.VITE_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+			VITE_PUBLIC_SUPABASE_ANON_KEY: process.env.VITE_PUBLIC_SUPABASE_ANON_KEY ?? 'test-anon-key'
 		}
 	}
 });
