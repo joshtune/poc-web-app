@@ -3,8 +3,8 @@
 	import {
 		ArrowLeftToBracketOutline,
 		ArrowRightToBracketOutline,
-	UserCircleOutline,
-	BarsOutline
+		UserCircleOutline,
+		BarsOutline
 	} from 'flowbite-svelte-icons';
 	import favicon from '$lib/assets/favicon.png';
 	import { ThemeToggle } from '$lib';
@@ -112,7 +112,9 @@
 			>
 				<div class="border-b border-gray-100 p-4 dark:border-gray-700">
 					<div class="flex items-center justify-between">
-						<span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+						<span
+							class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+						>
 							Display
 						</span>
 						<ThemeToggle />

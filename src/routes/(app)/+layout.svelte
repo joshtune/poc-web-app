@@ -79,7 +79,7 @@
 		<div class="relative flex-shrink-0 w-0 lg:w-64">
 			<div class="absolute inset-0 hidden lg:block" aria-hidden="true"></div>
 			<div
-				class="relative z-10 h-full bg-gray-50 border-r border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+				class="relative z-50 h-full bg-gray-50 border-r border-gray-200 dark:border-gray-700 dark:bg-gray-800"
 			>
 				<Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} items={sidebarItems} />
 			</div>
